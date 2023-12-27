@@ -334,6 +334,11 @@ body {
 	font-size: 18px !important;
 }
 
+/* Adjust the width and height as needed */
+.logo-img {
+    width: 200px; /* Set the desired width */
+    height: auto; /* Maintain aspect ratio */
+}
 
 
 
@@ -374,3 +379,11 @@ body {
 ::-webkit-scrollbar-thumb:hover {
 	background-color: rgba(0, 0, 0, 0.3);
 }
+
+
+/* Mes graphes */
+
+.bar {
+    fill: steelblue;
+    opacity: 0.7;
+  }

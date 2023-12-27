@@ -5,7 +5,6 @@
   <title>Netflix Insights Dashboard</title>
   <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css'>
 <link rel='stylesheet' href='https://unicons.iconscout.com/release/v3.0.6/css/line.css'><link rel="stylesheet" href="./style.css">
-
 </head>
 <body>
 <aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
@@ -68,12 +67,7 @@
 <section id="wrapper">
   <nav class="navbar navbar-expand-md">
     <div class="container-fluid mx-2">
-      <div class="navbar-header">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#toggle-navbar" aria-controls="toggle-navbar" aria-expanded="false" aria-label="Toggle navigation">
-          <i class="uil-bars text-white"></i>
-        </button>
-        <a class="navbar-brand" href="#">admin<span class="main-color">kit</span></a>
-      </div>
+      <a class="navbar-brand" href="#"><img class="logo-img" src="Assets/logo.png" alt="logo"></a>
       <div class="collapse navbar-collapse" id="toggle-navbar">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown">
@@ -111,8 +105,8 @@
   <div class="p-4">
     <div class="welcome">
       <div class="content rounded-3 p-3">
-        <h1 class="fs-3">Welcome to Dashboard</h1>
-        <p class="mb-0">Hello Jone Doe, welcome to your awesome dashboard!</p>
+        <h1 class="fs-3">Welcome to your dashboard!</h1>
+        <p class="mb-0">Dive into the fascinating world of Netflix with our interactive visualizations.</p>
       </div>
     </div>
 
@@ -120,37 +114,35 @@
       <div class="row">
         <div class="col-lg-4">
           <div class="box d-flex rounded-2 align-items-center mb-4 mb-lg-0 p-3">
-            <i class="uil-envelope-shield fs-2 text-center bg-primary rounded-circle"></i>
             <div class="ms-3">
               <div class="d-flex align-items-center">
                 <h3 class="mb-0">1,245</h3> <span class="d-block ms-2">Emails</span>
               </div>
-              <p class="fs-normal mb-0">Lorem ipsum dolor sit amet</p>
             </div>
           </div>
         </div>
         <div class="col-lg-4">
           <div class="box d-flex rounded-2 align-items-center mb-4 mb-lg-0 p-3">
-            <i class="uil-file fs-2 text-center bg-danger rounded-circle"></i>
             <div class="ms-3">
               <div class="d-flex align-items-center">
                 <h3 class="mb-0">34</h3> <span class="d-block ms-2">Projects</span>
               </div>
-              <p class="fs-normal mb-0">Lorem ipsum dolor sit amet</p>
+
             </div>
           </div>
         </div>
         <div class="col-lg-4">
           <div class="box d-flex rounded-2 align-items-center p-3">
-            <i class="uil-users-alt fs-2 text-center bg-success rounded-circle"></i>
+
             <div class="ms-3">
               <div class="d-flex align-items-center">
                 <h3 class="mb-0">5,245</h3> <span class="d-block ms-2">Users</span>
               </div>
-              <p class="fs-normal mb-0">Lorem ipsum dolor sit amet</p>
+
             </div>
           </div>
         </div>
+        
       </div>
     </section>
 
@@ -172,18 +164,14 @@
     </section>
 
     <section class="charts mt-4">
-      <div class="chart-container p-3">
-        <h3 class="fs-6 mb-3">Chart title number three</h3>
-        <div style="height: 300px">
-          <canvas id="chart3" width="100%"></canvas>
-        </div>
-      </div>
+      <div id="histogram"></div>
     </section>
   </div>
 </section>
 <!-- partial -->
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.jshttps://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js'></script><script  src="./script.js"></script>
-
+<script src="d3.js"></script>
+<script src="test.js"></script>
 </body>
 </html>
