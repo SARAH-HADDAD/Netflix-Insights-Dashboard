@@ -1,177 +1,223 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>Netflix Insights Dashboard</title>
-  <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css'>
-<link rel='stylesheet' href='https://unicons.iconscout.com/release/v3.0.6/css/line.css'><link rel="stylesheet" href="./style.css">
-</head>
-<body>
-<aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
-  <i class="uil-bars close-aside d-md-none d-lg-none" data-close="show-side-navigation1"></i>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Netflix Insights Dashboard</title>
+    <link rel="stylesheet" href="Styles/min.css" />
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"
+    />
+    <link rel="stylesheet" href="Styles/style.css" />
+  </head>
+  <body>
+    <aside
+      class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left"
+      id="show-side-navigation1"
+    >
+      <i
+        class="uil-bars close-aside d-md-none d-lg-none"
+        data-close="show-side-navigation1"
+      ></i>
 
+      <div class="search position-relative text-center px-4 py-3 mt-2">
+        <input
+          type="text"
+          class="form-control w-100 border-0 bg-transparent"
+          placeholder="Search here"
+        />
+        <i class="fa fa-search position-absolute d-block fs-6"></i>
+      </div>
 
-  <div class="search position-relative text-center px-4 py-3 mt-2">
-    <input type="text" class="form-control w-100 border-0 bg-transparent" placeholder="Search here">
-    <i class="fa fa-search position-absolute d-block fs-6"></i>
-  </div>
+      <ul class="categories list-unstyled">
+        <li class="has-dropdown">
+          <i class="uil-estate fa-fw"></i><a href="#"> Dashboard</a>
+          <ul class="sidebar-dropdown list-unstyled">
+            <li><a href="#">Lorem ipsum</a></li>
+            <li><a href="#">ipsum dolor</a></li>
+            <li><a href="#">dolor ipsum</a></li>
+            <li><a href="#">amet consectetur</a></li>
+            <li><a href="#">ipsum dolor sit</a></li>
+          </ul>
+        </li>
 
-  <ul class="categories list-unstyled">
-    <li class="has-dropdown">
-      <i class="uil-estate fa-fw"></i><a href="#"> Dashboard</a>
-      <ul class="sidebar-dropdown list-unstyled">
-        <li><a href="#">Lorem ipsum</a></li>
-        <li><a href="#">ipsum dolor</a></li>
-        <li><a href="#">dolor ipsum</a></li>
-        <li><a href="#">amet consectetur</a></li>
-        <li><a href="#">ipsum dolor sit</a></li>
+        <li class="">
+          <i class="uil-setting"></i><a href="#"> Settings</a>
+          <ul class="sidebar-dropdown list-unstyled">
+            <li><a href="#">Lorem ipsum</a></li>
+            <li><a href="#">ipsum dolor</a></li>
+            <li><a href="#">dolor ipsum</a></li>
+            <li><a href="#">amet consectetur</a></li>
+            <li><a href="#">ipsum dolor sit</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <i class="uil-chart-pie-alt"></i><a href="#"> Components</a>
+          <ul class="sidebar-dropdown list-unstyled">
+            <li><a href="#">Lorem ipsum</a></li>
+            <li><a href="#">ipsum dolor</a></li>
+            <li><a href="#">dolor ipsum</a></li>
+            <li><a href="#">amet consectetur</a></li>
+            <li><a href="#">ipsum dolor sit</a></li>
+          </ul>
+        </li>
+        <li class="has-dropdown">
+          <i class="uil-panel-add"></i><a href="#"> Charts</a>
+          <ul class="sidebar-dropdown list-unstyled">
+            <li><a href="#">Lorem ipsum</a></li>
+            <li><a href="#">ipsum dolor</a></li>
+            <li><a href="#">dolor ipsum</a></li>
+            <li><a href="#">amet consectetur</a></li>
+            <li><a href="#">ipsum dolor sit</a></li>
+          </ul>
+        </li>
+        <li class=""><i class="uil-map-marker"></i><a href="#"> Maps</a></li>
       </ul>
-    </li>
+    </aside>
 
-    <li class="">
-      <i class="uil-setting"></i><a href="#"> Settings</a>
-      <ul class="sidebar-dropdown list-unstyled">
-        <li><a href="#">Lorem ipsum</a></li>
-        <li><a href="#">ipsum dolor</a></li>
-        <li><a href="#">dolor ipsum</a></li>
-        <li><a href="#">amet consectetur</a></li>
-        <li><a href="#">ipsum dolor sit</a></li>
-      </ul>
-    </li>
-    <li class="has-dropdown">
-      <i class="uil-chart-pie-alt"></i><a href="#"> Components</a>
-      <ul class="sidebar-dropdown list-unstyled">
-        <li><a href="#">Lorem ipsum</a></li>
-        <li><a href="#">ipsum dolor</a></li>
-        <li><a href="#">dolor ipsum</a></li>
-        <li><a href="#">amet consectetur</a></li>
-        <li><a href="#">ipsum dolor sit</a></li>
-      </ul>
-    </li>
-    <li class="has-dropdown">
-      <i class="uil-panel-add"></i><a href="#"> Charts</a>
-      <ul class="sidebar-dropdown list-unstyled">
-        <li><a href="#">Lorem ipsum</a></li>
-        <li><a href="#">ipsum dolor</a></li>
-        <li><a href="#">dolor ipsum</a></li>
-        <li><a href="#">amet consectetur</a></li>
-        <li><a href="#">ipsum dolor sit</a></li>
-      </ul>
-    </li>
-    <li class="">
-      <i class="uil-map-marker"></i><a href="#"> Maps</a>
-    </li>
-  </ul>
-</aside>
-
-<section id="wrapper">
-  <nav class="navbar navbar-expand-md">
-    <div class="container-fluid mx-2">
-      <a class="navbar-brand" href="#"><img class="logo-img" src="Assets/logo.png" alt="logo"></a>
-      <div class="collapse navbar-collapse" id="toggle-navbar">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Settings
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li>
-                <a class="dropdown-item" href="#">My account</a>
+    <section id="wrapper">
+      <nav class="navbar navbar-expand-md">
+        <div class="container-fluid mx-2">
+          <a class="navbar-brand" href="#"
+            ><img class="logo-img" src="Assets/logo.png" alt="logo"
+          /></a>
+          <div class="collapse navbar-collapse" id="toggle-navbar">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="navbarDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Settings
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li>
+                    <a class="dropdown-item" href="#">My account</a>
+                  </li>
+                  <li><a class="dropdown-item" href="#">My inbox</a></li>
+                  <li><a class="dropdown-item" href="#">Help</a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item" href="#">Log out</a></li>
+                </ul>
               </li>
-              <li><a class="dropdown-item" href="#">My inbox</a>
+              <li class="nav-item">
+                <a class="nav-link" href="#"
+                  ><i class="uil-comments-alt"></i><span>23</span></a
+                >
               </li>
-              <li><a class="dropdown-item" href="#">Help</a>
+              <li class="nav-item">
+                <a class="nav-link" href="#"
+                  ><i class="uil-bell"></i><span>98</span></a
+                >
               </li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Log out</a></li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <i
+                    data-show="show-side-navigation1"
+                    class="uil-bars show-side-btn"
+                  ></i>
+                </a>
+              </li>
             </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#"><i class="uil-comments-alt"></i><span>23</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#"><i class="uil-bell"></i><span>98</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <i data-show="show-side-navigation1" class="uil-bars show-side-btn"></i>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+          </div>
+        </div>
+      </nav>
 
-  <div class="p-4">
-    <div class="welcome">
-      <div class="content rounded-3 p-3">
-        <h1 class="fs-3">Welcome to your dashboard!</h1>
-        <p class="mb-0">Dive into the fascinating world of Netflix with our interactive visualizations.</p>
-      </div>
-    </div>
+      <div class="p-4">
+        <div class="welcome">
+          <div class="content rounded-3 p-3">
+            <h1 class="fs-3 red-text">Welcome To Your Dashboard!</h1>
+            <h5 class="mb-0">
+              Dive into the fascinating world of Netflix with our interactive
+              visualizations.
+            </p>
+          </div>
+        </div>
 
-    <section class="statistics mt-4">
-      <div class="row">
-        <div class="col-lg-4">
-          <div class="box d-flex rounded-2 align-items-center mb-4 mb-lg-0 p-3">
-            <div class="ms-3">
-              <div class="d-flex align-items-center">
-                <h3 class="mb-0">1,245</h3> <span class="d-block ms-2">Emails</span>
+        <section class="statistics mt-4">
+          <div class="row">
+            <div class="col-lg-auto">
+              <div class="box d-flex rounded-2 align-items-center mb-4 mb-lg-0 p-3">
+                <div class="text-center">
+                  <div class="d-flex align-items-center">
+                    <h3 class="mb-0 red-text">Total Title</h3>
+                  </div>
+                  <h5 class="fs-normal mb-0">Lorem ipsum</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-auto">
+              <div class="box d-flex rounded-2 align-items-center mb-4 mb-lg-0 p-3">
+                <div class="text-center">
+                  <div class="d-flex align-items-center">
+                    <h3 class="mb-0 red-text">Total Genres</h3>
+                  </div>
+                  <h5 class="fs-normal mb-0 ">Lorem ipsum</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-auto">
+              <div class="box d-flex rounded-2 align-items-center p-3">
+                <div class="text-center">
+                  <div class="d-flex align-items-center">
+                    <h3 class="mb-0 red-text">Total Movies</h3>
+                  </div>
+                  <h5 class="fs-normal mb-0">Lorem ipsum</h5>
+                </div>
+              </div>
+            </div>  
+            <div class="col-lg-auto">
+              <div class="box d-flex rounded-2 align-items-center mb-4 mb-lg-0 p-3">
+                <div class="text-center">
+                  <div class="d-flex align-items-center">
+                    <h3 class="mb-0 red-text">Total TV Shows</h3>
+                  </div>
+                  <h5 class="fs-normal mb-0">Lorem ipsum</h5>
+                </div>
+              </div>
+            </div>  
+            <div class="col-lg-auto">
+              <div class="box d-flex rounded-2 align-items-center p-3">
+                <div class="text-center">
+                  <div class="d-flex align-items-center">
+                    <h3 class="mb-0 red-text">Total Countries</h3>
+                  </div>
+                  <h5 class="fs-normal mb-0">L</h5>
+                </div>
+              </div>
+            </div>
+          </div>          
+        </section>        
+
+        <section class="charts mt-4">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="chart-container rounded-2 p-3">
+                <h3 class="fs-6 mb-3">Chart title number one</h3>
+                <canvas id="myChart"></canvas>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="chart-container rounded-2 p-3">
+                <h3 class="fs-6 mb-3">Chart title number two</h3>
+                <canvas id="myChart2"></canvas>
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="box d-flex rounded-2 align-items-center mb-4 mb-lg-0 p-3">
-            <div class="ms-3">
-              <div class="d-flex align-items-center">
-                <h3 class="mb-0">34</h3> <span class="d-block ms-2">Projects</span>
-              </div>
+        </section>
 
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="box d-flex rounded-2 align-items-center p-3">
-
-            <div class="ms-3">
-              <div class="d-flex align-items-center">
-                <h3 class="mb-0">5,245</h3> <span class="d-block ms-2">Users</span>
-              </div>
-
-            </div>
-          </div>
-        </div>
-        
+        <section class="charts mt-4">
+          <div id="histogram"></div>
+        </section>
       </div>
     </section>
-
-    <section class="charts mt-4">
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="chart-container rounded-2 p-3">
-            <h3 class="fs-6 mb-3">Chart title number one</h3>
-            <canvas id="myChart"></canvas>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="chart-container rounded-2 p-3">
-            <h3 class="fs-6 mb-3">Chart title number two</h3>
-            <canvas id="myChart2"></canvas>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="charts mt-4">
-      <div id="histogram"></div>
-    </section>
-  </div>
-</section>
-<!-- partial -->
-<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.jshttps://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js'></script><script  src="./script.js"></script>
-<script src="d3.js"></script>
-<script src="test.js"></script>
-</body>
+    <!-- partial -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.jshttps://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="Scripts/script.js"></script>
+  </body>
 </html>
