@@ -1,7 +1,7 @@
 const netflixData = (callback) => {
   d3.csv("Data/netflix_titles.csv").then((data) => {
     let dataset = data
-      .filter((d) => d.type && d.release_year && d.rating) // Exclude rows with missing values
+      .filter((d) => d.type && d.release_year && d.rating)
       .map((d) => {
         return {
           show_id: d.show_id,
@@ -21,7 +21,15 @@ const netflixData = (callback) => {
     callback(dataset);
   });
 };
+
 netflixData((data) => {
+  const uniqueCountries = Array.from(new Set(data.map((d) => d.country))).filter(
+    (country) => country !== "null"
+  );
+
+  // Calculating the total number of countries
+  const totalCountries = uniqueCountries.length;
+  console.log(totalCountries);
 
   const filteredData = data.filter(
     (d) => d.release_year >= 2000 && d.release_year < 2024
@@ -98,7 +106,7 @@ netflixData((data) => {
   const states = ["All", "Movie", "TV Show"];
   const movieData = filteredData.filter((entry) => entry.type === "Movie");
   const tvData = filteredData.filter((entry) => entry.type === "TV Show");
-  // Update the scales based on the movieData
+
   const movieCounts = d3.rollup(
     movieData,
     (v) => v.length,
@@ -118,9 +126,10 @@ netflixData((data) => {
     release_year,
     count,
   }));
+
   tvCountsArray.sort((a, b) => a.release_year - b.release_year);
   movieCountsArray.sort((a, b) => a.release_year - b.release_year);
-  let currentArray = countsArray; // Initialize with the default data
+  let currentArray = countsArray;
 
   svg.on("click", function () {
     if (currentState === "All") {
@@ -134,7 +143,6 @@ netflixData((data) => {
       currentState = "All";
     }
 
-    // Transition bars based on the updated data
     bars
       .data(currentArray, (d) => d.release_year)
       .transition()
@@ -143,7 +151,7 @@ netflixData((data) => {
       .attr("y", (d) => yScale(d.release_year))
       .attr("height", yScale.bandwidth());
 
-    // Update the title text
     d3.select("#graph1Title").text(`${currentState} Releases by Year`);
+    d3.select("#TotalCountriesNumber").text(totalCountries);
   });
 });
