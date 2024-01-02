@@ -1,119 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Netflix Titles Information</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      div {
-        border: 1px solid #ddd;
-        margin: 10px;
-        padding: 10px;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
     </style>
-  </head>
-  <body>
-    <script src="Scripts/d3.js"></script>
-    <script>
-      const netflixData = (callback) => {
+</head>
+<body>
+
+  <script src="Scripts/d3.js"></script>
+  <script>
+    const netflixData = (callback) => {
         d3.csv("Data/netflix_titles.csv").then((data) => {
-          let dataset = data.map((d) => {
-            return {
-              show_id: d.show_id,
-              type: d.type,
-              title: d.title,
-              director: d.director,
-              cast: d.cast,
-              country: d.country,
-              date_added: d.date_added,
-              release_year: parseInt(d.release_year),
-              rating: d.rating,
-              duration: d.duration,
-              listed_in: d.listed_in,
-              description: d.description,
-            };
-          });
-          callback(dataset);
+            let dataset = data.map((d) => {
+                return {
+                    show_id: d.show_id,
+                    type: d.type,
+                    title: d.title,
+                    director: d.director,
+                    cast: d.cast,
+                    country: d.country,
+                    date_added: d.date_added,
+                    release_year: parseInt(d.release_year),
+                    rating: d.rating,
+                    duration: (d.type === "TV Show") ? `${d.duration} Seasons` : `${d.duration} min`,
+                    listed_in: d.listed_in,
+                    description: d.description,
+                };
+            });
+            callback(dataset);
         });
-      };
+    };
 
-      netflixData((data) => {
-        const filteredData = data.filter(
-          (d) => d.release_year >= 2000 && d.release_year < 2024
-        );
-
+    netflixData((data) => {
         const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-        const width = 600 - margin.left - margin.right;
+        const width = 800 - margin.left - margin.right;
         const height = 400 - margin.top - margin.bottom;
 
-
         const svg = d3
-          .select("body")
-          .append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-          .attr(
-            "transform",
-            "translate(" + margin.left + "," + margin.top + ")"
-          );
+            .select("body")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        const counts = d3.rollup(
-          filteredData,
-          (v) => v.length,
-          (d) => d.release_year
-        );
-        const countsArray = Array.from(counts, ([release_year, count]) => ({
-          release_year,
-          count,
-        }));
+        // Define the custom order of ratings
+        const customOrder = ['G', 'TV-Y', 'TV-G', 'PG', 'TV-Y7', 'TV-Y7-FV', 'TV-PG', 'PG-13', 'TV-14', 'R', 'NC-17', 'TV-MA'];
 
-        countsArray.sort((a, b) => a.release_year - b.release_year);
+        // Create a map for the custom order
+        const orderMap = new Map(customOrder.map((rating, index) => [rating, index]));
 
-        const colorScale = d3.scaleSequential()
-            .domain([0, d3.max(countsArray, d => d.count)])
-            .interpolator(d3.interpolate("#FFC0CB", "#FF0000"));
+        // Sort the data based on the custom order
+        data.sort((a, b) => orderMap.get(a.rating) - orderMap.get(b.rating));
 
-        const xScale = d3
-          .scaleLinear()
-          .domain([0, d3.max(countsArray, (d) => d.count)])
-          .range([0, width]);
+        // Create a histogram layout
+        const histogram = d3.histogram()
+            .value(d => d.rating)
+            .domain(customOrder) // Use the custom order as the domain
+            .thresholds(customOrder);
 
-        const yScale = d3
-          .scaleBand()
-          .domain(countsArray.map((d) => d.release_year))
-          .range([height, 0])
-          .padding(0.1);
+        // Generate bins
+        const bins = histogram(data);
 
-        svg
-          .selectAll("rect")
-          .data(countsArray)
-          .enter()
-          .append("rect")
-          .attr("x", 0)
-          .attr("y", (d) => yScale(d.release_year))
-          .attr("width", (d) => xScale(d.count))
-          .attr("height", yScale.bandwidth())
-          .attr("fill", (d) => colorScale(d.count));
+        // Create scales for the x and y axes
+        const xScale = d3.scaleBand()
+            .domain(customOrder)
+            .range([0, width])
+            .padding(0.1);
 
-        svg.append("g").call(d3.axisLeft(yScale));
+        const yScale = d3.scaleLinear()
+            .domain([0, d3.max(bins, d => d.length)])
+            .range([height, 0]);
 
-        svg
-          .append("g")
-          .attr("transform", "translate(0," + height + ")")
-          .call(d3.axisBottom(xScale));
+        // Draw rectangles for each bin
+        svg.selectAll("rect")
+            .data(bins)
+            .enter().append("rect")
+            .attr("x", d => xScale(d.x0))
+            .attr("y", d => yScale(d.length))
+            .attr("width", xScale.bandwidth())
+            .attr("height", d => height - yScale(d.length))
+            .attr("fill", "steelblue");
 
-        svg
-          .append("text")
-          .attr("x", width / 2)
-          .attr("y", height + margin.top + 10)
-          .attr("text-anchor", "middle")
-          .text("Count");
-      });
-    </script>
-  </body>
+        // Add x-axis
+        svg.append("g")
+            .attr("transform", `translate(0, ${height})`)
+            .call(d3.axisBottom(xScale))
+            .append("text")
+            .attr("x", width / 2)
+            .attr("y", margin.bottom - 5)
+            .attr("text-anchor", "middle")
+            .text("Rating");
+
+        // Add y-axis
+        svg.append("g")
+            .call(d3.axisLeft(yScale))
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -margin.left + 10)
+            .attr("x", -height / 2)
+            .attr("dy", "0.71em")
+            .attr("text-anchor", "middle")
+            .text("Count");
+
+        svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", -margin.top / 2)
+            .attr("text-anchor", "middle")
+            .text("Content Ratings Distribution");
+    });
+</script>
+</body>
 </html>
