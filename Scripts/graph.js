@@ -22,38 +22,6 @@ const netflixData = (callback) => {
   });
 };
 netflixData((data) => {
-  const tvShows = data.filter((d) => d.type === "TV Show");
-
-  // Group TV shows by rating and count occurrences
-  const ratingCounts = d3.rollup(
-    tvShows,
-    (v) => v.length,
-    (d) => d.rating
-  );
-
-  // Convert the rollup result to an array
-  const ratingCountsArray = Array.from(ratingCounts, ([rating, count]) => ({
-    rating,
-    count,
-  }));
-
-  // Log or use the ratingCountsArray as needed
-  console.log(ratingCountsArray);
-
-  const Movies = data.filter((d) => d.type === "Movie");
-  const movieRatingCounts = d3.rollup(
-    Movies,
-    (v) => v.length,
-    (d) => d.rating
-  );
-  const movieRatingCountsArray = Array.from(
-    movieRatingCounts,
-    ([rating, count]) => ({
-      rating,
-      count,
-    })
-  );
-  console.log(movieRatingCountsArray);
 
   const filteredData = data.filter(
     (d) => d.release_year >= 2000 && d.release_year < 2024

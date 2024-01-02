@@ -238,7 +238,7 @@ function RadarChart(id, data, options) {
     .style("fill", "none")
     .style("filter", "url(#glow)");
 
-  blobWrapper
+    blobWrapper
     .selectAll(".radarCircle")
     .data(function (d, i) {
       return d;
@@ -258,47 +258,13 @@ function RadarChart(id, data, options) {
     })
     .style("fill-opacity", 0.8);
 
-  var blobCircleWrapper = g
+    var blobCircleWrapper = g
     .selectAll(".radarCircleWrapper")
     .data(data)
     .enter()
     .append("g")
     .attr("class", "radarCircleWrapper");
-
-  blobCircleWrapper
-    .selectAll(".radarInvisibleCircle")
-    .data(function (d, i) {
-      return d;
-    })
-    .enter()
-    .append("circle")
-    .attr("class", "radarInvisibleCircle")
-    .attr("r", cfg.dotRadius * 1.5)
-    .attr("cx", function (d, i) {
-      return rScale(d.value) * Math.cos(angleSlice * i - Math.PI / 2);
-    })
-    .attr("cy", function (d, i) {
-      return rScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2);
-    })
-    .style("fill", "none")
-    .style("pointer-events", "all")
-    .on("mouseover", function (d, i) {
-      var newX = parseFloat(d3.select(this).attr("cx")) - 10;
-      var newY = parseFloat(d3.select(this).attr("cy")) - 10;
-
-      tooltip
-        .attr("x", newX)
-        .attr("y", newY)
-        .text(Format(d.value))
-        .transition()
-        .duration(200)
-        .style("opacity", 1);
-    })
-    .on("mouseout", function () {
-      tooltip.transition().duration(200).style("opacity", 0);
-    });
-
-  var tooltip = g.append("text").attr("class", "tooltip").style("opacity", 0);
+  
 
   function wrap(text, width) {
     text.each(function () {
