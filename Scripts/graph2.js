@@ -100,9 +100,9 @@ function RadarChart(id, data, options) {
     })
     .attr("dy", "0.4em")
     .style("font-size", "10px")
-    .attr("fill", "#737373")
+    .attr("fill", "white")
     .text(function (d, i) {
-      return Format((maxValue * d) / cfg.levels);
+      return parseInt(Format((maxValue * d) / cfg.levels));
     });
 
   var axis = axisGrid
@@ -333,7 +333,7 @@ var radarChartOptions = {
   h: height,
   margin: margin,
   maxValue: 0.5,
-  levels: 2,
+  levels: 5,
   roundStrokes: true,
   color: color,
 };
