@@ -3,13 +3,16 @@ const netflixData = (callback) => {
     let dataset = data
       .filter((d) => d.type && d.release_year && d.rating)
       .map((d) => {
+        // Split the country string into an array of countries
+        const countries = d.country ? d.country.split(",") : [];
+        
         return {
           show_id: d.show_id,
           type: d.type,
           title: d.title,
           director: d.director,
           cast: d.cast,
-          country: d.country,
+          country: countries.map((c) => c.trim()), // Trim whitespaces
           date_added: d.date_added,
           release_year: parseInt(d.release_year),
           rating: d.rating,
@@ -22,14 +25,25 @@ const netflixData = (callback) => {
   });
 };
 
+
 netflixData((data) => {
-  const uniqueCountries = Array.from(new Set(data.map((d) => d.country))).filter(
-    (country) => country !== "null"
-  );
+  // Extracting unique countries
+  const uniqueCountries = new Set();
+
+  data.forEach((d) => {
+    if (Array.isArray(d.country)) {
+      d.country.forEach((c) => uniqueCountries.add(c));
+    } else {
+      uniqueCountries.add(d.country);
+    }
+  });
+
+  // Removing "null" from unique countries (if necessary)
+  uniqueCountries.delete("null");
 
   // Calculating the total number of countries
-  const totalCountries = uniqueCountries.length;
-  console.log(totalCountries);
+  const totalCountries = uniqueCountries.size;
+  d3.select("#TotalCountriesNumber").text(totalCountries);
 
   const filteredData = data.filter(
     (d) => d.release_year >= 2000 && d.release_year < 2024
@@ -152,6 +166,5 @@ netflixData((data) => {
       .attr("height", yScale.bandwidth());
 
     d3.select("#graph1Title").text(`${currentState} Releases by Year`);
-    d3.select("#TotalCountriesNumber").text(totalCountries);
   });
 });
