@@ -1,26 +1,60 @@
 const netflixData = (callback) => {
   d3.csv("Data/netflix_titles.csv").then((data) => {
-    let dataset = data.map((d) => {
-      return {
-        show_id: d.show_id,
-        type: d.type,
-        title: d.title,
-        director: d.director,
-        cast: d.cast,
-        country: d.country,
-        date_added: d.date_added,
-        release_year: parseInt(d.release_year),
-        rating: d.rating,
-        duration: d.duration,
-        listed_in: d.listed_in,
-        description: d.description,
-      };
-    });
+    let dataset = data
+      .filter((d) => d.type && d.release_year && d.rating) // Exclude rows with missing values
+      .map((d) => {
+        return {
+          show_id: d.show_id,
+          type: d.type,
+          title: d.title,
+          director: d.director,
+          cast: d.cast,
+          country: d.country,
+          date_added: d.date_added,
+          release_year: parseInt(d.release_year),
+          rating: d.rating,
+          duration: d.duration,
+          listed_in: d.listed_in,
+          description: d.description,
+        };
+      });
     callback(dataset);
   });
 };
-
 netflixData((data) => {
+  const tvShows = data.filter((d) => d.type === "TV Show");
+
+  // Group TV shows by rating and count occurrences
+  const ratingCounts = d3.rollup(
+    tvShows,
+    (v) => v.length,
+    (d) => d.rating
+  );
+
+  // Convert the rollup result to an array
+  const ratingCountsArray = Array.from(ratingCounts, ([rating, count]) => ({
+    rating,
+    count,
+  }));
+
+  // Log or use the ratingCountsArray as needed
+  console.log(ratingCountsArray);
+
+  const Movies = data.filter((d) => d.type === "Movie");
+  const movieRatingCounts = d3.rollup(
+    Movies,
+    (v) => v.length,
+    (d) => d.rating
+  );
+  const movieRatingCountsArray = Array.from(
+    movieRatingCounts,
+    ([rating, count]) => ({
+      rating,
+      count,
+    })
+  );
+  console.log(movieRatingCountsArray);
+
   const filteredData = data.filter(
     (d) => d.release_year >= 2000 && d.release_year < 2024
   );
@@ -119,7 +153,7 @@ netflixData((data) => {
   tvCountsArray.sort((a, b) => a.release_year - b.release_year);
   movieCountsArray.sort((a, b) => a.release_year - b.release_year);
   let currentArray = countsArray; // Initialize with the default data
-  
+
   svg.on("click", function () {
     if (currentState === "All") {
       currentArray = movieCountsArray;
@@ -131,8 +165,7 @@ netflixData((data) => {
       currentArray = countsArray;
       currentState = "All";
     }
-  
-  
+
     // Transition bars based on the updated data
     bars
       .data(currentArray, (d) => d.release_year)
@@ -141,7 +174,7 @@ netflixData((data) => {
       .attr("width", (d) => xScale(d.count))
       .attr("y", (d) => yScale(d.release_year))
       .attr("height", yScale.bandwidth());
-  
+
     // Update the title text
     d3.select("#graph1Title").text(`${currentState} Releases by Year`);
   });

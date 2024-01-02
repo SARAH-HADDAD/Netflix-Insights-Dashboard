@@ -1,120 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netflix Titles Information</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-    </style>
-</head>
-<body>
+!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/ >
+		<title>Smoothed D3.js Radar Chart</title>
 
-  <script src="Scripts/d3.js"></script>
-  <script>
-    const netflixData = (callback) => {
-        d3.csv("Data/netflix_titles.csv").then((data) => {
-            let dataset = data.map((d) => {
-                return {
-                    show_id: d.show_id,
-                    type: d.type,
-                    title: d.title,
-                    director: d.director,
-                    cast: d.cast,
-                    country: d.country,
-                    date_added: d.date_added,
-                    release_year: parseInt(d.release_year),
-                    rating: d.rating,
-                    duration: (d.type === "TV Show") ? `${d.duration} Seasons` : `${d.duration} min`,
-                    listed_in: d.listed_in,
-                    description: d.description,
-                };
-            });
-            callback(dataset);
-        });
-    };
+		<!-- Google fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
 
-    netflixData((data) => {
-        const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-        const width = 800 - margin.left - margin.right;
-        const height = 400 - margin.top - margin.bottom;
+		<!-- D3.js -->
+        <script src="Scripts/radarChart.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+		
+		<style>
+			body {
+				font-family: 'Open Sans', sans-serif;
+				font-size: 11px;
+				font-weight: 300;
+				fill: #242424;
+				text-align: center;
+				text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+				cursor: default;
+			}
+			
+			.legend {
+				font-family: 'Raleway', sans-serif;
+				fill: #333333;
+			}
+			
+			.tooltip {
+				fill: #333333;
+			}
+		</style>
+	
+	</head>
+	<body>
 
-        const svg = d3
-            .select("body")
-            .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		<div class="radarChart"></div>
+		<script>
+      
+      /* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
+      
+			////////////////////////////////////////////////////////////// 
+			//////////////////////// Set-Up ////////////////////////////// 
+			////////////////////////////////////////////////////////////// 
 
-        // Define the custom order of ratings
-        const customOrder = ['G', 'TV-Y', 'TV-G', 'PG', 'TV-Y7', 'TV-Y7-FV', 'TV-PG', 'PG-13', 'TV-14', 'R', 'NC-17', 'TV-MA'];
+			var margin = {top: 100, right: 100, bottom: 100, left: 100},
+				width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
+				height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+					
+			////////////////////////////////////////////////////////////// 
+			////////////////////////// Data ////////////////////////////// 
+			////////////////////////////////////////////////////////////// 
 
-        // Create a map for the custom order
-        const orderMap = new Map(customOrder.map((rating, index) => [rating, index]));
+			var data = [
+					  [//Movie
+						{axis:"TV-MA",value:0.22},
+						{axis:"TV-14",value:0.28},
+						{axis:"TV-Y7",value:0.29},
+						{axis:"TV-PG",value:0.17},
+						{axis:"TV-Y",value:0.22},
+						{axis:"TV-G",value:0.2},
+						{axis:"R",value:0.21},
+						{axis:"NR",value:0.50},
+                        {axis:"TV-MA",value:0.22},
+						{axis:"TV-14",value:0.28},
+						{axis:"TV-Y7",value:0.29},
+						{axis:"TV-PG",value:0.17},
+						{axis:"TV-Y",value:0.22},
+						{axis:"TV-G",value:0.2},
+						{axis:"R",value:0.21},
+						{axis:"NR",value:0.50},
+                        {axis:"coco",value:0.50}	
+					  ],
+                        [//TV Show
+                        {axis:"TV-MA",value:0.22},
+                        {axis:"TV-14",value:0.28},
+                        {axis:"TV-Y7",value:0.29},
+                        {axis:"TV-PG",value:0.17},
+                        {axis:"TV-Y",value:0.22},
+                        {axis:"TV-G",value:0.2},
+                        {axis:"R",value:0.21},
+                        {axis:"NR",value:0.50},]
+					];
+			////////////////////////////////////////////////////////////// 
+			//////////////////// Draw the Chart ////////////////////////// 
+			////////////////////////////////////////////////////////////// 
 
-        // Sort the data based on the custom order
-        data.sort((a, b) => orderMap.get(a.rating) - orderMap.get(b.rating));
-
-        // Create a histogram layout
-        const histogram = d3.histogram()
-            .value(d => d.rating)
-            .domain(customOrder) // Use the custom order as the domain
-            .thresholds(customOrder);
-
-        // Generate bins
-        const bins = histogram(data);
-
-        // Create scales for the x and y axes
-        const xScale = d3.scaleBand()
-            .domain(customOrder)
-            .range([0, width])
-            .padding(0.1);
-
-        const yScale = d3.scaleLinear()
-            .domain([0, d3.max(bins, d => d.length)])
-            .range([height, 0]);
-
-        // Draw rectangles for each bin
-        svg.selectAll("rect")
-            .data(bins)
-            .enter().append("rect")
-            .attr("x", d => xScale(d.x0))
-            .attr("y", d => yScale(d.length))
-            .attr("width", xScale.bandwidth())
-            .attr("height", d => height - yScale(d.length))
-            .attr("fill", "steelblue");
-
-        // Add x-axis
-        svg.append("g")
-            .attr("transform", `translate(0, ${height})`)
-            .call(d3.axisBottom(xScale))
-            .append("text")
-            .attr("x", width / 2)
-            .attr("y", margin.bottom - 5)
-            .attr("text-anchor", "middle")
-            .text("Rating");
-
-        // Add y-axis
-        svg.append("g")
-            .call(d3.axisLeft(yScale))
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", -margin.left + 10)
-            .attr("x", -height / 2)
-            .attr("dy", "0.71em")
-            .attr("text-anchor", "middle")
-            .text("Count");
-
-        svg.append("text")
-            .attr("x", width / 2)
-            .attr("y", -margin.top / 2)
-            .attr("text-anchor", "middle")
-            .text("Content Ratings Distribution");
-    });
-</script>
-</body>
+			var color = d3.scale.ordinal()
+				.range(["#EDC951","#CC333F","#00A0B0"]);
+				
+			var radarChartOptions = {
+			  w: width,
+			  h: height,
+			  margin: margin,
+			  maxValue: 0.5,
+			  levels: 5,
+			  roundStrokes: true,
+			  color: color
+			};
+			//Call function to draw the Radar chart
+			RadarChart(".radarChart", data, radarChartOptions);
+		</script>
+	</body>
 </html>
