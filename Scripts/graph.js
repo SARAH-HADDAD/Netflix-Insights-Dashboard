@@ -38,14 +38,11 @@ netflixData((data) => {
       uniqueCountries.add(trimmedCountry);
 
       // Increment title count for the country in the object
-      countryTitleCount[trimmedCountry] = (countryTitleCount[trimmedCountry] || 0) + 1;
+      countryTitleCount[trimmedCountry] =
+        (countryTitleCount[trimmedCountry] || 0) + 1;
     });
   });
 
-  // Log title count for each country
-  for (const country in countryTitleCount) {
-    console.log(`${country}: ${countryTitleCount[country]} titles`);
-  }
   const totalTitles = data.length;
   d3.select("#TotalTitleNumber").text(totalTitles);
 
@@ -65,25 +62,82 @@ netflixData((data) => {
 
   d3.json("Data/world.json")
     .then((world) => {
+      // Set a threshold for the significant number of titles
+      const titleThreshold = 100;
+
       // Select the element with ID "map"
-      const svg = d3.select("#map")
+      const svg = d3
+        .select("#map")
         .append("svg")
-        .attr("width", "100%")  // Set the width to 100%
-        .attr("height", "500px");  // Set height to auto to maintain aspect ratio
-  
-      svg.selectAll("path")
+        .attr("width", "100%")
+        .attr("height", "500px");
+
+      // Add path elements for each country
+      svg
+        .selectAll("path")
         .data(world.features)
         .enter()
         .append("path")
-        .attr("fill", "white")
-        .attr("d", path);
+        .attr("fill", (d) => {
+          const countryName = d.properties.name;
+          const titleCount = countryTitleCount[countryName] || 0;
+
+          // Color based on title count
+          return titleCount > 0 ? colorScale(titleCount) : "white";
+        })
+        .attr("d", path).on("mouseover", function (event, d) {
+          // Change color on hover
+          d3.select(this).attr("fill", "#990000");
+      
+          // Add a bigger text element for country name and title count on hover
+          const countryName = d.properties.name;
+          const titleCount = countryTitleCount[countryName] || 0;
+          
+          svg
+            .append("text")
+            .attr("id", "hoverText")
+            .attr("x", width / 3)
+            .attr("y", height)
+            .attr("text-anchor", "middle")
+            .attr("dy", "0.35em")
+            .attr("fill", "#FFFFFF")
+            .attr("font-size", "22px")
+            .text(`${countryName}: ${titleCount} titles`);
+        })
+        .on("mouseout", function (event, d) {
+          // Revert to the original color on mouseout
+          const countryName = d.properties.name;
+          const titleCount = countryTitleCount[countryName] || 0;
+          d3.select(this).attr("fill", titleCount > 0 ? colorScale(titleCount) : "white");
+      
+          // Remove the added text element on mouseout
+          svg.select("#hoverText").remove();
+        });
+        
+
+      // Add text elements for significant countries
+      svg
+        .selectAll("text")
+        .data(world.features)
+        .enter()
+        .filter((d) => {
+          const countryName = d.properties.name;
+          const titleCount = countryTitleCount[countryName] || 0;
+
+          // Show text only for countries with a significant number of titles
+          return titleCount > titleThreshold;
+        })
+        .append("text")
+        .attr("transform", (d) => `translate(${path.centroid(d)})`)
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.35em") // Adjust the vertical position as needed
+        .attr("fill", "#00A0B0")
+        .attr("font-size", "10px")
+        .text((d) => d.properties.name);
     })
     .catch((error) => {
-      console.error(error); // Log the error to the console
+      console.error(error);
     });
-  
-
- 
 
   const totalGenres = uniqueGenres.size;
   d3.select("#TotalGenresNumber").text(totalGenres);
