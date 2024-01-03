@@ -30,7 +30,22 @@ netflixData((data) => {
   // Extracting unique countries
   const uniqueCountries = new Set();
   const uniqueGenres = new Set();
+  const countryTitleCount = {}; // Object to store title count for each country
 
+  data.forEach((d) => {
+    d.country.forEach((c) => {
+      const trimmedCountry = c.trim();
+      uniqueCountries.add(trimmedCountry);
+
+      // Increment title count for the country in the object
+      countryTitleCount[trimmedCountry] = (countryTitleCount[trimmedCountry] || 0) + 1;
+    });
+  });
+
+  // Log title count for each country
+  for (const country in countryTitleCount) {
+    console.log(`${country}: ${countryTitleCount[country]} titles`);
+  }
   const totalTitles = data.length;
   d3.select("#TotalTitleNumber").text(totalTitles);
 
@@ -45,6 +60,30 @@ netflixData((data) => {
   // Calculating the total number of countries and genres
   const totalCountries = uniqueCountries.size;
   d3.select("#TotalCountriesNumber").text(totalCountries);
+
+  const path = d3.geoPath().projection(d3.geoMercator());
+
+  d3.json("Data/world.json")
+    .then((world) => {
+      // Select the element with ID "map"
+      const svg = d3.select("#map")
+        .append("svg")
+        .attr("width", "100%")  // Set the width to 100%
+        .attr("height", "500px");  // Set height to auto to maintain aspect ratio
+  
+      svg.selectAll("path")
+        .data(world.features)
+        .enter()
+        .append("path")
+        .attr("fill", "white")
+        .attr("d", path);
+    })
+    .catch((error) => {
+      console.error(error); // Log the error to the console
+    });
+  
+
+ 
 
   const totalGenres = uniqueGenres.size;
   d3.select("#TotalGenresNumber").text(totalGenres);
