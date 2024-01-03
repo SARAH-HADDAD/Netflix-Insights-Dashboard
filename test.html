@@ -1,92 +1,20 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <title>Smoothed D3.js Radar Chart</title>
+<meta charset="utf-8">
+<style>svg{width:100%;height:500px;margin:0px auto;}</style>
+<body>
+<script src="Scripts/d3.js"></script>
+<script src="Scripts/topojson.js"></script>
+<script>
+const svg = d3.select("body").append("svg");
+const path = d3.geoPath().projection(d3.geoMercator());
 
-    <!-- Google fonts -->
-    <link
-      href="http://fonts.googleapis.com/css?family=Open+Sans:400,300"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css?family=Raleway"
-      rel="stylesheet"
-      type="text/css"
-    />
-
-    <!-- D3.js -->
-    <script src="Scripts/radarChart.js"></script>
-    <script src="https://d3js.org/d3.v3.min.js"></script>
-
-    <style>
-      body {
-        font-family: "Open Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 300;
-        fill: #242424;
-        text-align: center;
-        text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
-        cursor: default;
-      }
-
-      .legend {
-        font-family: "Raleway", sans-serif;
-        fill: #333333;
-      }
-
-      .tooltip {
-        fill: #333333;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="radarChart"></div>
-    <script>
-
-      var margin = { top: 100, right: 100, bottom: 100, left: 100 },
-        width =
-          Math.min(500, window.innerWidth - 10) - margin.left - margin.right,
-        height = Math.min(
-          width,
-          window.innerHeight - margin.top - margin.bottom - 20
-        );
-      var data = [
-        [
-          //TV show
-          { axis: "TV-MA", value: 1145/2666},
-          { axis: "TV-14", value: 733/2666},
-          { axis: "TV-PG", value: 323/2666 },
-          { axis: "TV-Y7", value: 195/2666},
- 
-          { axis: "TV-Y", value: 176/2666 },
-          { axis: "TV-G", value: 94/2666 },
-        ],
-        [
-          //Movie
-          { axis: "TV-MA", value: 2062/4425 },
-          { axis: "TV-14", value: 1427/4425 },
-          { axis: "TV-PG", value: 540/4425 },
-          { axis: "TV-Y7", value: 139/4425},
-          
-          { axis: "TV-Y", value: 131/4425 },
-          { axis: "TV-G", value: 126/4425 },
-        ],
-      ];
-
-      var color = d3.scale.ordinal().range(["#CC333F", "#00A0B0"]);
-
-      var radarChartOptions = {
-        w: width,
-        h: height,
-        margin: margin,
-        maxValue: 0.5,
-        levels: 2,
-        roundStrokes: true,
-        color: color,
-      };
-      RadarChart(".radarChart", data, radarChartOptions);
-    </script>
-  </body>
-</html>
+d3.json("Data/world.json").then((world) => {
+  svg.selectAll("path")
+     .data(topojson.feature(world, world.objects.countries).features)
+     .enter().append("path")
+     .attr("d", path);
+}).catch((error) => {
+  throw error;
+});
+</script>
+</body>
