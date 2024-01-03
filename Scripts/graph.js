@@ -5,7 +5,8 @@ const netflixData = (callback) => {
       .map((d) => {
         // Split the country string into an array of countries
         const countries = d.country ? d.country.split(",") : [];
-        
+        const genres = d.listed_in ? d.listed_in.split(",") : [];
+
         return {
           show_id: d.show_id,
           type: d.type,
@@ -17,7 +18,7 @@ const netflixData = (callback) => {
           release_year: parseInt(d.release_year),
           rating: d.rating,
           duration: d.duration,
-          listed_in: d.listed_in,
+          listed_in: genres.map((g) => g.trim()), // Trim whitespaces
           description: d.description,
         };
       });
@@ -25,25 +26,28 @@ const netflixData = (callback) => {
   });
 };
 
-
 netflixData((data) => {
   // Extracting unique countries
   const uniqueCountries = new Set();
+  const uniqueGenres = new Set();
+
+  const totalTitles = data.length;
+  d3.select("#TotalTitleNumber").text(totalTitles);
 
   data.forEach((d) => {
-    if (Array.isArray(d.country)) {
-      d.country.forEach((c) => uniqueCountries.add(c));
-    } else {
-      uniqueCountries.add(d.country);
-    }
+    d.country.forEach((c) => uniqueCountries.add(c));
+    d.listed_in.forEach((g) => uniqueGenres.add(g));
   });
 
   // Removing "null" from unique countries (if necessary)
   uniqueCountries.delete("null");
 
-  // Calculating the total number of countries
+  // Calculating the total number of countries and genres
   const totalCountries = uniqueCountries.size;
   d3.select("#TotalCountriesNumber").text(totalCountries);
+
+  const totalGenres = uniqueGenres.size;
+  d3.select("#TotalGenresNumber").text(totalGenres);
 
   const filteredData = data.filter(
     (d) => d.release_year >= 2000 && d.release_year < 2024
@@ -120,6 +124,12 @@ netflixData((data) => {
   const states = ["All", "Movie", "TV Show"];
   const movieData = filteredData.filter((entry) => entry.type === "Movie");
   const tvData = filteredData.filter((entry) => entry.type === "TV Show");
+
+  const totalTVShows = tvData.length;
+  d3.select("#TotalTVShowsNumber").text(totalTVShows);
+
+  const totalMovies = movieData.length;
+  d3.select("#TotalMoviesNumber").text(totalMovies);
 
   const movieCounts = d3.rollup(
     movieData,
