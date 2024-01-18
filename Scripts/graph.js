@@ -58,22 +58,21 @@ netflixData((data) => {
   const totalCountries = uniqueCountries.size;
   d3.select("#TotalCountriesNumber").text(totalCountries);
 
-  const path = d3.geoPath().projection(d3.geoMercator());
-
   d3.json("Data/world.json")
     .then((world) => {
       // Set a threshold for the significant number of titles
       const titleThreshold = 100;
-
+      var projection = d3.geoMercator().fitSize([1100, 700], world);
+      var path = d3.geoPath().projection(projection);
       // Select the element with ID "map"
-      const svg = d3
+      const mapSvg = d3
         .select("#map")
         .append("svg")
         .attr("width", "100%")
-        .attr("height", "500px");
+        .attr("height", "700px");
 
       // Add path elements for each country
-      svg
+      mapSvg
         .selectAll("path")
         .data(world.features)
         .enter()
@@ -85,38 +84,47 @@ netflixData((data) => {
           // Color based on title count
           return titleCount > 0 ? colorScale(titleCount) : "white";
         })
-        .attr("d", path).on("mouseover", function (event, d) {
+        .attr("d", path)
+        // Change the 'mouseover' event handler for the map path
+        .on("mouseover", function (event, d) {
           // Change color on hover
           d3.select(this).attr("fill", "#990000");
-      
-          // Add a bigger text element for country name and title count on hover
+
+          // Add a text element for country name and title count on hover
           const countryName = d.properties.name;
           const titleCount = countryTitleCount[countryName] || 0;
-          
-          svg
+
+          // Get the centroid of the country path
+          const centroid = path.centroid(d);
+
+          // Add a text element at the centroid
+          mapSvg
             .append("text")
             .attr("id", "hoverText")
-            .attr("x", width / 3)
-            .attr("y", height)
+            .attr("x", centroid[0])
+            .attr("y", centroid[1])
             .attr("text-anchor", "middle")
-            .attr("dy", "0.35em")
-            .attr("fill", "#FFFFFF")
-            .attr("font-size", "22px")
+            .attr("dy", "0.5em")
+            .attr("fill", "#00A0B0")
+            .attr("font-size", "18px") // Adjust font size as needed
             .text(`${countryName}: ${titleCount} titles`);
         })
+
         .on("mouseout", function (event, d) {
           // Revert to the original color on mouseout
           const countryName = d.properties.name;
           const titleCount = countryTitleCount[countryName] || 0;
-          d3.select(this).attr("fill", titleCount > 0 ? colorScale(titleCount) : "white");
-      
+          d3.select(this).attr(
+            "fill",
+            titleCount > 0 ? colorScale(titleCount) : "white"
+          );
+
           // Remove the added text element on mouseout
-          svg.select("#hoverText").remove();
+          mapSvg.select("#hoverText").remove();
         });
-        
 
       // Add text elements for significant countries
-      svg
+      mapSvg
         .selectAll("text")
         .data(world.features)
         .enter()
@@ -126,14 +134,54 @@ netflixData((data) => {
 
           // Show text only for countries with a significant number of titles
           return titleCount > titleThreshold;
-        })
-        .append("text")
-        .attr("transform", (d) => `translate(${path.centroid(d)})`)
-        .attr("text-anchor", "middle")
-        .attr("dy", "0.35em") // Adjust the vertical position as needed
-        .attr("fill", "#00A0B0")
-        .attr("font-size", "10px")
-        .text((d) => d.properties.name);
+        });
+// Add a gradient legend
+const legendGradient = mapSvg
+  .append("defs")
+  .append("linearGradient")
+  .attr("id", "legendGradient")
+  .attr("x1", "0%")
+  .attr("y1", "100%")
+  .attr("x2", "0%")
+  .attr("y2", "0%");
+
+// Define gradient colors
+const gradientColors = ["#FFC0CB", "#FF0000"];
+
+// Add color stops to the gradient
+legendGradient
+  .selectAll("stop")
+  .data(gradientColors)
+  .enter()
+  .append("stop")
+  .attr("offset", (d, i) => i * 100 + "%")
+  .attr("stop-color", (d) => d);
+
+// Create a rectangle to show the gradient
+mapSvg
+  .append("rect")
+  .attr("x", 100)
+  .attr("y", 450)
+  .attr("width", 20)
+  .attr("height", 200)
+  .style("fill", "url(#legendGradient)");
+
+// Add legend text
+mapSvg
+  .append("text")
+  .attr("x", 125)  // Adjust x position as needed
+  .attr("y", 450)  // Adjust y position as needed
+  .attr("fill", "#FFFFFF")
+  .attr("font-size", "12px")
+  .text("3690 titles");
+
+mapSvg
+  .append("text")
+  .attr("x", 125)  // Adjust x position as needed
+  .attr("y", 650)  // Adjust y position as needed
+  .attr("fill", "#FFFFFF")
+  .attr("font-size", "12px")
+  .text("1 title");
     })
     .catch((error) => {
       console.error(error);
@@ -146,7 +194,7 @@ netflixData((data) => {
     (d) => d.release_year >= 2000 && d.release_year < 2024
   );
 
-  const margin = { top: 20, right: 30, bottom: 40, left: 45 };
+  const margin = { top: 20, right: 0, bottom: 40, left: 45 };
   const width = 550 - margin.left - margin.right;
   const height = 400 - margin.top - margin.bottom;
 
