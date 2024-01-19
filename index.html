@@ -71,7 +71,11 @@
             <li><a href="#">ipsum dolor sit</a></li>
           </ul>
         </li>
-        <li class=""><i class="uil-map-marker"></i><a href="#"> Maps</a></li>
+        <li class="has-dropdown" id="mapsDropdown">
+  <i class="uil-map-marker"></i><a href="#"> Maps</a>
+        </li>
+</li>
+
       </ul>
     </aside>
 
@@ -213,16 +217,18 @@
               </div>
             </div>
           </div>
+          <section class="charts mt-4" id="mapsSection" style="display: none;">
           <div class="content rounded-3 p-3 charts mt-4">
                 <h2 class="text-center red-text mb-3" id="graph1Title">Countries</h2>
                 <div class="map-container">
                   <div id="map"></div>
                 </div>
           </div>
+          </section>
           <div class="row">
             <div class="col-lg-6">
               <div class="chart-container rounded-2 p-3" id="linePlot">
-                <h2 class=" text-center red-text mb-3" id="graph1Title">Released Year</h2>
+                <h2 class=" text-center red-text mb-3">Trend of Gener</h2>
               </div>
             </div>
             <div class="col-lg-6">
@@ -248,6 +254,13 @@
     <script src="Scripts/d3.js"></script>
     <script src="Scripts/graph.js"></script>
     <script src="Scripts/graph2.js"></script>
+<script>
+  document.getElementById('mapsDropdown').addEventListener('click', function () {
+    // Toggle the visibility of the charts section related to the map
+    const mapsSection = document.getElementById('mapsSection');
+    mapsSection.style.display = (mapsSection.style.display === 'none') ? 'block' : 'none';
+  });
+</script>
 
 
   </body>

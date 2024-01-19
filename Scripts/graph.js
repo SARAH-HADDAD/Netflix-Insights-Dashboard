@@ -60,38 +60,35 @@ netflixData((data) => {
     const type = d.type;
 
     genres.forEach((genre) => {
-      if(releaseYear >= 2000 && releaseYear <= 2020){
-      if (type === "Movie") {
-        // Initialize the count for the genre and release year if not present
-        movieGenreCount[genre] = movieGenreCount[genre] || {};
-        movieGenreCount[genre][releaseYear] =
-          movieGenreCount[genre][releaseYear] || 0;
+      if (releaseYear >= 2010 && releaseYear <= 2020) {
+        if (type === "Movie") {
+          // Initialize the count for the genre and release year if not present
+          movieGenreCount[genre] = movieGenreCount[genre] || {};
+          movieGenreCount[genre][releaseYear] =
+            movieGenreCount[genre][releaseYear] || 0;
 
-        // Increment the count for the genre and release year
-        movieGenreCount[genre][releaseYear] += 1;
+          // Increment the count for the genre and release year
+          movieGenreCount[genre][releaseYear] += 1;
+        } else if (type === "TV Show") {
+          // Initialize the count for the genre and release year if not present
+          TvShowGenreCount[genre] = TvShowGenreCount[genre] || {};
+          TvShowGenreCount[genre][releaseYear] =
+            TvShowGenreCount[genre][releaseYear] || 0;
+
+          // Increment the count for the genre and release year
+          TvShowGenreCount[genre][releaseYear] += 1;
+        }
       }
-      else if (type === "TV Show") {
-        // Initialize the count for the genre and release year if not present
-        TvShowGenreCount[genre] = TvShowGenreCount[genre] || {};
-        TvShowGenreCount[genre][releaseYear] =
-          TvShowGenreCount[genre][releaseYear] || 0;
-
-        // Increment the count for the genre and release year
-        TvShowGenreCount[genre][releaseYear] += 1;
-      }}
-
     });
   });
 
-  // Now the movieGenreCount object contains the count of movie titles released in each genre for each year
-  console.log(movieGenreCount);
 
   const genres = Object.keys(movieGenreCount);
+  const genres2 = Object.keys(TvShowGenreCount);
 
   const releaseYears = [...new Set(data.map((d) => d.release_year))]
-  .filter(year => year >= 2000 && year <= 2020)
-  .sort((a, b) => a - b);
-
+    .filter((year) => year >= 2010 && year <= 2020)
+    .sort((a, b) => a - b);
 
   // Removing "null" from unique countries (if necessary)
   uniqueCountries.delete("null");
@@ -240,6 +237,8 @@ netflixData((data) => {
   const width = 550 - margin.left - margin.right;
   const height = 400 - margin.top - margin.bottom;
 
+  let currentData = movieGenreCount;
+
   const svg = d3
     .select("#release_year")
     .append("svg")
@@ -255,39 +254,78 @@ netflixData((data) => {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
-    const x = d3.scalePoint()
-    .domain(releaseYears)
-    .range([0, width]);
+  const x = d3.scalePoint().domain(releaseYears).range([0, width]);
 
-  svg2.append("g")
+  svg2
+    .append("g")
     .attr("transform", `translate(0, ${height})`)
     .call(d3.axisBottom(x).tickValues(x.domain().filter((d, i) => !(i % 2))))
     .selectAll("text")
     .attr("transform", "rotate(-45)")
     .style("text-anchor", "end");
 
-  const y = d3.scaleLinear()
-    .domain([0, d3.max(genres, genre => d3.max(releaseYears, year => movieGenreCount[genre][year] || 0))])
+  const y = d3
+    .scaleLinear()
+    .domain([
+      0,
+      d3.max(genres, (genre) =>
+        d3.max(releaseYears, (year) => movieGenreCount[genre][year] || 0)
+      ),
+    ])
     .range([height, 0]);
 
-  svg2.append("g")
-    .call(d3.axisLeft(y));
+  svg2.append("g").call(d3.axisLeft(y));
 
-  const color = d3.scaleOrdinal()
-    .range(d3.schemeCategory10);
+  const color = d3.scaleOrdinal().range(d3.schemeCategory10);
 
-  svg2.selectAll(".line")
+  svg2
+  .selectAll(".line")
+  .data(genres)
+  .enter()
+  .append("path")
+  .attr("class", "line") // Add a class to the lines for easier selection
+  .attr("fill", "none")
+  .attr("stroke", (genre) => color(genre))
+  .attr("stroke-width", 1.5)
+  .attr("d", (genre) =>
+    d3
+      .line()
+      .x((year) => x(year))
+      .y((year) => y(movieGenreCount[genre][year] || 0))(releaseYears)
+  )
+  .on("mouseover", function (event, genre) {
+    svg2
+      .append("text")
+      .attr("class", "label")
+      .attr("x", event.pageX - svg2.node().getBoundingClientRect().left + 5)
+      .attr("y", event.pageY - svg2.node().getBoundingClientRect().top)
+      .text(genre)
+      .attr("fill", color(genre))
+      .attr("text-anchor", "start")
+      .attr("font-size", "12px");
+  })
+  .on("mouseout", function () {
+    svg2.selectAll(".label").remove();
+  });
+
+// Toggle between movieGenreCount and TvShowGenreCount on svg2 click
+svg2.on("click", function () {
+  console.log("clicked");
+  // Toggle the data state
+  currentData = currentData === movieGenreCount ? TvShowGenreCount : movieGenreCount;
+
+  // Update the paths with the new data
+  svg2
+    .selectAll(".line")
     .data(genres)
-    .enter()
-    .append("path")
-    .attr("fill", "none")
-    .attr("stroke", genre => color(genre))
-    .attr("stroke-width", 1.5)
-    .attr("d", genre => d3.line()
-      .x(year => x(year))
-      .y(year => y(movieGenreCount[genre][year] || 0))
-    (releaseYears));
-
+    .attr("d", (genre) =>
+      d3
+        .line()
+        .x((year) => x(year))
+        .y((year) => y(currentData[genre][year] || 0))(releaseYears)
+    );
+});
+  
 
 
   const counts = d3.rollup(
