@@ -51,6 +51,26 @@ netflixData((data) => {
     d.listed_in.forEach((g) => uniqueGenres.add(g));
   });
 
+  const movieGenreCount = {};
+
+  data.forEach((d) => {
+    const releaseYear = d.release_year;
+    const genres = d.listed_in;
+    const type = d.type;
+
+    genres.forEach((genre) => {
+      // Initialize the count for the genre and release year if not present
+      movieGenreCount[genre] = movieGenreCount[genre] || {};
+      movieGenreCount[genre][releaseYear] = movieGenreCount[genre][releaseYear] || 0;
+
+      // Increment the count for the genre and release year
+      movieGenreCount[genre][releaseYear] += 1;
+    });
+  });
+
+  // Now the movieGenreCount object contains the count of movie titles released in each genre for each year
+  console.log(movieGenreCount);
+
   // Removing "null" from unique countries (if necessary)
   uniqueCountries.delete("null");
 
@@ -172,16 +192,16 @@ mapSvg
   .attr("x", 125)  // Adjust x position as needed
   .attr("y", 450)  // Adjust y position as needed
   .attr("fill", "#FFFFFF")
-  .attr("font-size", "12px")
-  .text("3690 titles");
+  .attr("font-size", "16px")
+  .text("3690");
 
 mapSvg
   .append("text")
   .attr("x", 125)  // Adjust x position as needed
   .attr("y", 650)  // Adjust y position as needed
   .attr("fill", "#FFFFFF")
-  .attr("font-size", "12px")
-  .text("1 title");
+  .attr("font-size", "16px")
+  .text("1");
     })
     .catch((error) => {
       console.error(error);

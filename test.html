@@ -1,33 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>World Map</title>
-  <style>
-    body { margin: 0; padding: 0; }
-    svg { width: 100%; height: 500px; }
-  </style>
-</head>
-<body>
-  <script src="https://d3js.org/d3.v5.min.js"></script>
-  <script src="https://d3js.org/topojson.v3.min.js"></script>
-  <script>
-    const svg = d3.select("body").append("svg")
-      .attr("width", "100%")
-      .attr("height", "100%");
+<meta charset="utf-8">
 
-    const path = d3.geoPath().projection(d3.geoMercator());
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v6.min.js"></script>
 
-    d3.json("https://unpkg.com/world-atlas@1/world/110m.json").then((world) => {
-      svg.append("path")
-         .datum(topojson.feature(world, world.objects.countries))
-         .attr("d", path)
-         .attr("fill", "#ccc") // Fill color for the countries
-         .attr("stroke", "#fff"); // Stroke color for the country borders
-    }).catch((error) => {
-      console.error("Error loading world data:", error);
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<script>
+// Set the dimensions and margins of the graph
+const margin = { top: 10, right: 30, bottom: 30, left: 60 },
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// Append the SVG object to the body of the page
+const svg = d3.select("#my_dataviz")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+// Read the data
+const movieGenreCount = {};
+
+const netflixData = (callback) => {
+  d3.csv("Data/netflix_titles.csv").then((data) => {
+    let dataset = data
+      .filter((d) => d.type && d.release_year && d.rating)
+      .map((d) => {
+        const countries = d.country ? d.country.split(",") : [];
+        const genres = d.listed_in ? d.listed_in.split(",") : [];
+
+        return {
+          show_id: d.show_id,
+          type: d.type,
+          title: d.title,
+          director: d.director,
+          cast: d.cast,
+          country: countries.map((c) => c.trim()),
+          date_added: d.date_added,
+          release_year: parseInt(d.release_year),
+          rating: d.rating,
+          duration: d.duration,
+          listed_in: genres.map((g) => g.trim()),
+          description: d.description,
+        };
+      });
+    callback(dataset);
+  });
+};
+
+netflixData((data) => {
+  const movieGenreCount = {};
+
+  data.forEach((d) => {
+    const releaseYear = d.release_year;
+    const genres = d.listed_in;
+
+    genres.forEach((genre) => {
+      // Initialize the count for the genre and release year if not present
+      movieGenreCount[genre] = movieGenreCount[genre] || {};
+      movieGenreCount[genre][releaseYear] = movieGenreCount[genre][releaseYear] || 0;
+
+      // Increment the count for the genre and release year
+      movieGenreCount[genre][releaseYear] += 1;
     });
-  </script>
-</body>
-</html>
+  });
+
+  // Now the movieGenreCount object contains the count of movie titles released in each genre for each year
+  console.log(movieGenreCount);
+
+  const genres = Object.keys(movieGenreCount);
+
+  // Get all release years and sort them
+  const releaseYears = [...new Set(data.map((d) => d.release_year))].sort((a, b) => a - b);
+
+  const x = d3.scalePoint()
+    .domain(releaseYears)
+    .range([0, width]);
+
+  svg.append("g")
+    .attr("transform", `translate(0, ${height})`)
+    .call(d3.axisBottom(x).tickValues(x.domain().filter((d, i) => !(i % 2))))
+    .selectAll("text")
+    .attr("transform", "rotate(-45)")
+    .style("text-anchor", "end");
+
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(genres, genre => d3.max(releaseYears, year => movieGenreCount[genre][year] || 0))])
+    .range([height, 0]);
+
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+  const color = d3.scaleOrdinal()
+    .range(d3.schemeCategory10);
+
+  svg.selectAll(".line")
+    .data(genres)
+    .enter()
+    .append("path")
+    .attr("fill", "none")
+    .attr("stroke", genre => color(genre))
+    .attr("stroke-width", 1.5)
+    .attr("d", genre => d3.line()
+      .x(year => x(year))
+      .y(year => y(movieGenreCount[genre][year] || 0))
+    (releaseYears));
+});
+</script>
