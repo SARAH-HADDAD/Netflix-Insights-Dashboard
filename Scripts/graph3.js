@@ -1,20 +1,10 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-
-<!-- Load d3.js -->
-<script src="https://d3js.org/d3.v6.min.js"></script>
-
-<!-- Create a div where the graph will take place -->
-<div id="my_dataviz"></div>
-
-<script>
 // Set the dimensions and margins of the graph
 const margin = { top: 10, right: 30, bottom: 30, left: 60 },
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 // Append the SVG object to the body of the page
-const svg = d3.select("#my_dataviz")
+const svg = d3.select("#linePlot")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -27,7 +17,7 @@ const movieGenreCount = {};
 const netflixData = (callback) => {
   d3.csv("Data/netflix_titles.csv").then((data) => {
     let dataset = data
-      .filter((d) => d.type && d.release_year && d.rating)
+      .filter((d) => d.type && d.release_year && d.rating && d.release_year >= 2010) // Filter data for years starting from 2000
       .map((d) => {
         const countries = d.country ? d.country.split(",") : [];
         const genres = d.listed_in ? d.listed_in.split(",") : [];
@@ -57,14 +47,18 @@ netflixData((data) => {
   data.forEach((d) => {
     const releaseYear = d.release_year;
     const genres = d.listed_in;
+    const type = d.type;
 
     genres.forEach((genre) => {
-      // Initialize the count for the genre and release year if not present
-      movieGenreCount[genre] = movieGenreCount[genre] || {};
-      movieGenreCount[genre][releaseYear] = movieGenreCount[genre][releaseYear] || 0;
 
-      // Increment the count for the genre and release year
-      movieGenreCount[genre][releaseYear] += 1;
+      if (type === "TV Show") {
+        // Initialize the count for the genre and release year if not present
+        movieGenreCount[genre] = movieGenreCount[genre] || {};
+        movieGenreCount[genre][releaseYear] = movieGenreCount[genre][releaseYear] || 0;
+
+        // Increment the count for the genre and release year
+        movieGenreCount[genre][releaseYear] += 1;
+      }
     });
   });
 
@@ -109,4 +103,3 @@ netflixData((data) => {
       .y(year => y(movieGenreCount[genre][year] || 0))
     (releaseYears));
 });
-</script>

@@ -52,6 +52,7 @@ netflixData((data) => {
   });
 
   const movieGenreCount = {};
+  const TvShowGenreCount = {};
 
   data.forEach((d) => {
     const releaseYear = d.release_year;
@@ -59,17 +60,38 @@ netflixData((data) => {
     const type = d.type;
 
     genres.forEach((genre) => {
-      // Initialize the count for the genre and release year if not present
-      movieGenreCount[genre] = movieGenreCount[genre] || {};
-      movieGenreCount[genre][releaseYear] = movieGenreCount[genre][releaseYear] || 0;
+      if(releaseYear >= 2000 && releaseYear <= 2020){
+      if (type === "Movie") {
+        // Initialize the count for the genre and release year if not present
+        movieGenreCount[genre] = movieGenreCount[genre] || {};
+        movieGenreCount[genre][releaseYear] =
+          movieGenreCount[genre][releaseYear] || 0;
 
-      // Increment the count for the genre and release year
-      movieGenreCount[genre][releaseYear] += 1;
+        // Increment the count for the genre and release year
+        movieGenreCount[genre][releaseYear] += 1;
+      }
+      else if (type === "TV Show") {
+        // Initialize the count for the genre and release year if not present
+        TvShowGenreCount[genre] = TvShowGenreCount[genre] || {};
+        TvShowGenreCount[genre][releaseYear] =
+          TvShowGenreCount[genre][releaseYear] || 0;
+
+        // Increment the count for the genre and release year
+        TvShowGenreCount[genre][releaseYear] += 1;
+      }}
+
     });
   });
 
   // Now the movieGenreCount object contains the count of movie titles released in each genre for each year
   console.log(movieGenreCount);
+
+  const genres = Object.keys(movieGenreCount);
+
+  const releaseYears = [...new Set(data.map((d) => d.release_year))]
+  .filter(year => year >= 2000 && year <= 2020)
+  .sort((a, b) => a - b);
+
 
   // Removing "null" from unique countries (if necessary)
   uniqueCountries.delete("null");
@@ -155,53 +177,53 @@ netflixData((data) => {
           // Show text only for countries with a significant number of titles
           return titleCount > titleThreshold;
         });
-// Add a gradient legend
-const legendGradient = mapSvg
-  .append("defs")
-  .append("linearGradient")
-  .attr("id", "legendGradient")
-  .attr("x1", "0%")
-  .attr("y1", "100%")
-  .attr("x2", "0%")
-  .attr("y2", "0%");
+      // Add a gradient legend
+      const legendGradient = mapSvg
+        .append("defs")
+        .append("linearGradient")
+        .attr("id", "legendGradient")
+        .attr("x1", "0%")
+        .attr("y1", "100%")
+        .attr("x2", "0%")
+        .attr("y2", "0%");
 
-// Define gradient colors
-const gradientColors = ["#FFC0CB", "#FF0000"];
+      // Define gradient colors
+      const gradientColors = ["#FFC0CB", "#FF0000"];
 
-// Add color stops to the gradient
-legendGradient
-  .selectAll("stop")
-  .data(gradientColors)
-  .enter()
-  .append("stop")
-  .attr("offset", (d, i) => i * 100 + "%")
-  .attr("stop-color", (d) => d);
+      // Add color stops to the gradient
+      legendGradient
+        .selectAll("stop")
+        .data(gradientColors)
+        .enter()
+        .append("stop")
+        .attr("offset", (d, i) => i * 100 + "%")
+        .attr("stop-color", (d) => d);
 
-// Create a rectangle to show the gradient
-mapSvg
-  .append("rect")
-  .attr("x", 100)
-  .attr("y", 450)
-  .attr("width", 20)
-  .attr("height", 200)
-  .style("fill", "url(#legendGradient)");
+      // Create a rectangle to show the gradient
+      mapSvg
+        .append("rect")
+        .attr("x", 100)
+        .attr("y", 450)
+        .attr("width", 20)
+        .attr("height", 200)
+        .style("fill", "url(#legendGradient)");
 
-// Add legend text
-mapSvg
-  .append("text")
-  .attr("x", 125)  // Adjust x position as needed
-  .attr("y", 450)  // Adjust y position as needed
-  .attr("fill", "#FFFFFF")
-  .attr("font-size", "16px")
-  .text("3690");
+      // Add legend text
+      mapSvg
+        .append("text")
+        .attr("x", 125) // Adjust x position as needed
+        .attr("y", 450) // Adjust y position as needed
+        .attr("fill", "#FFFFFF")
+        .attr("font-size", "16px")
+        .text("3690");
 
-mapSvg
-  .append("text")
-  .attr("x", 125)  // Adjust x position as needed
-  .attr("y", 650)  // Adjust y position as needed
-  .attr("fill", "#FFFFFF")
-  .attr("font-size", "16px")
-  .text("1");
+      mapSvg
+        .append("text")
+        .attr("x", 125) // Adjust x position as needed
+        .attr("y", 650) // Adjust y position as needed
+        .attr("fill", "#FFFFFF")
+        .attr("font-size", "16px")
+        .text("1");
     })
     .catch((error) => {
       console.error(error);
@@ -214,7 +236,7 @@ mapSvg
     (d) => d.release_year >= 2000 && d.release_year < 2024
   );
 
-  const margin = { top: 20, right: 0, bottom: 40, left: 45 };
+  const margin = { top: 20, right: 20, bottom: 40, left: 45 };
   const width = 550 - margin.left - margin.right;
   const height = 400 - margin.top - margin.bottom;
 
@@ -225,6 +247,48 @@ mapSvg
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  const svg2 = d3
+    .select("#linePlot")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+    const x = d3.scalePoint()
+    .domain(releaseYears)
+    .range([0, width]);
+
+  svg2.append("g")
+    .attr("transform", `translate(0, ${height})`)
+    .call(d3.axisBottom(x).tickValues(x.domain().filter((d, i) => !(i % 2))))
+    .selectAll("text")
+    .attr("transform", "rotate(-45)")
+    .style("text-anchor", "end");
+
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(genres, genre => d3.max(releaseYears, year => movieGenreCount[genre][year] || 0))])
+    .range([height, 0]);
+
+  svg2.append("g")
+    .call(d3.axisLeft(y));
+
+  const color = d3.scaleOrdinal()
+    .range(d3.schemeCategory10);
+
+  svg2.selectAll(".line")
+    .data(genres)
+    .enter()
+    .append("path")
+    .attr("fill", "none")
+    .attr("stroke", genre => color(genre))
+    .attr("stroke-width", 1.5)
+    .attr("d", genre => d3.line()
+      .x(year => x(year))
+      .y(year => y(movieGenreCount[genre][year] || 0))
+    (releaseYears));
+
+
 
   const counts = d3.rollup(
     filteredData,
