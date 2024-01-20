@@ -51,6 +51,23 @@ netflixData((data) => {
     d.listed_in.forEach((g) => uniqueGenres.add(g));
   });
 
+
+
+
+
+
+
+///
+////
+/////
+//////
+/////// 3eme graph
+//////  
+/////
+////
+///
+
+
   const movieGenreCount = {};
   const TvShowGenreCount = {};
 
@@ -89,142 +106,6 @@ netflixData((data) => {
   const releaseYears = [...new Set(data.map((d) => d.release_year))]
     .filter((year) => year >= 2010 && year <= 2020)
     .sort((a, b) => a - b);
-
-  // Removing "null" from unique countries (if necessary)
-  uniqueCountries.delete("null");
-
-  // Calculating the total number of countries and genres
-  const totalCountries = uniqueCountries.size;
-  d3.select("#TotalCountriesNumber").text(totalCountries);
-
-  d3.json("Data/world.json")
-    .then((world) => {
-      // Set a threshold for the significant number of titles
-      const titleThreshold = 100;
-      var projection = d3.geoMercator().fitSize([1100, 700], world);
-      var path = d3.geoPath().projection(projection);
-      // Select the element with ID "map"
-      const mapSvg = d3
-        .select("#map")
-        .append("svg")
-        .attr("width", "100%")
-        .attr("height", "700px");
-
-      // Add path elements for each country
-      mapSvg
-        .selectAll("path")
-        .data(world.features)
-        .enter()
-        .append("path")
-        .attr("fill", (d) => {
-          const countryName = d.properties.name;
-          const titleCount = countryTitleCount[countryName] || 0;
-
-          // Color based on title count
-          return titleCount > 0 ? colorScale(titleCount) : "white";
-        })
-        .attr("d", path)
-        // Change the 'mouseover' event handler for the map path
-        .on("mouseover", function (event, d) {
-          // Change color on hover
-          d3.select(this).attr("fill", "#990000");
-
-          // Add a text element for country name and title count on hover
-          const countryName = d.properties.name;
-          const titleCount = countryTitleCount[countryName] || 0;
-
-          // Get the centroid of the country path
-          const centroid = path.centroid(d);
-
-          // Add a text element at the centroid
-          mapSvg
-            .append("text")
-            .attr("id", "hoverText")
-            .attr("x", centroid[0])
-            .attr("y", centroid[1])
-            .attr("text-anchor", "middle")
-            .attr("dy", "0.5em")
-            .attr("fill", "#00A0B0")
-            .attr("font-size", "18px") // Adjust font size as needed
-            .text(`${countryName}: ${titleCount} titles`);
-        })
-
-        .on("mouseout", function (event, d) {
-          // Revert to the original color on mouseout
-          const countryName = d.properties.name;
-          const titleCount = countryTitleCount[countryName] || 0;
-          d3.select(this).attr(
-            "fill",
-            titleCount > 0 ? colorScale(titleCount) : "white"
-          );
-
-          // Remove the added text element on mouseout
-          mapSvg.select("#hoverText").remove();
-        });
-
-      // Add text elements for significant countries
-      mapSvg
-        .selectAll("text")
-        .data(world.features)
-        .enter()
-        .filter((d) => {
-          const countryName = d.properties.name;
-          const titleCount = countryTitleCount[countryName] || 0;
-
-          // Show text only for countries with a significant number of titles
-          return titleCount > titleThreshold;
-        });
-      // Add a gradient legend
-      const legendGradient = mapSvg
-        .append("defs")
-        .append("linearGradient")
-        .attr("id", "legendGradient")
-        .attr("x1", "0%")
-        .attr("y1", "100%")
-        .attr("x2", "0%")
-        .attr("y2", "0%");
-
-      // Define gradient colors
-      const gradientColors = ["#FFC0CB", "#FF0000"];
-
-      // Add color stops to the gradient
-      legendGradient
-        .selectAll("stop")
-        .data(gradientColors)
-        .enter()
-        .append("stop")
-        .attr("offset", (d, i) => i * 100 + "%")
-        .attr("stop-color", (d) => d);
-
-      // Create a rectangle to show the gradient
-      mapSvg
-        .append("rect")
-        .attr("x", 100)
-        .attr("y", 450)
-        .attr("width", 20)
-        .attr("height", 200)
-        .style("fill", "url(#legendGradient)");
-
-      // Add legend text
-      mapSvg
-        .append("text")
-        .attr("x", 125) // Adjust x position as needed
-        .attr("y", 450) // Adjust y position as needed
-        .attr("fill", "#FFFFFF")
-        .attr("font-size", "16px")
-        .text("3690");
-
-      mapSvg
-        .append("text")
-        .attr("x", 125) // Adjust x position as needed
-        .attr("y", 650) // Adjust y position as needed
-        .attr("fill", "#FFFFFF")
-        .attr("font-size", "16px")
-        .text("1");
-    })
-    .catch((error) => {
-      console.error(error);
-    });
 
   const totalGenres = uniqueGenres.size;
   d3.select("#TotalGenresNumber").text(totalGenres);
@@ -328,6 +209,161 @@ svg2.on("click", function () {
   
 
 
+///
+////
+/////
+//////
+/////// the map
+//////  
+/////
+////
+///
+
+// Removing "null" from unique countries (if necessary)
+uniqueCountries.delete("null");
+
+// Calculating the total number of countries and genres
+const totalCountries = uniqueCountries.size;
+d3.select("#TotalCountriesNumber").text(totalCountries);
+
+d3.json("Data/world.json")
+  .then((world) => {
+    // Set a threshold for the significant number of titles
+    const titleThreshold = 100;
+    var projection = d3.geoMercator().fitSize([1100, 700], world);
+    var path = d3.geoPath().projection(projection);
+    // Select the element with ID "map"
+    const mapSvg = d3
+      .select("#map")
+      .append("svg")
+      .attr("width", "100%")
+      .attr("height", "700px");
+
+    // Add path elements for each country
+    mapSvg
+      .selectAll("path")
+      .data(world.features)
+      .enter()
+      .append("path")
+      .attr("fill", (d) => {
+        const countryName = d.properties.name;
+        const titleCount = countryTitleCount[countryName] || 0;
+
+        // Color based on title count
+        return titleCount > 0 ? colorScale(titleCount) : "white";
+      })
+      .attr("d", path)
+      // Change the 'mouseover' event handler for the map path
+      .on("mouseover", function (event, d) {
+        // Change color on hover
+        d3.select(this).attr("fill", "#990000");
+
+        // Add a text element for country name and title count on hover
+        const countryName = d.properties.name;
+        const titleCount = countryTitleCount[countryName] || 0;
+
+        // Get the centroid of the country path
+        const centroid = path.centroid(d);
+
+        // Add a text element at the centroid
+        mapSvg
+          .append("text")
+          .attr("id", "hoverText")
+          .attr("x", centroid[0])
+          .attr("y", centroid[1])
+          .attr("text-anchor", "middle")
+          .attr("dy", "0.5em")
+          .attr("fill", "#00A0B0")
+          .attr("font-size", "18px") // Adjust font size as needed
+          .text(`${countryName}: ${titleCount} titles`);
+      })
+
+      .on("mouseout", function (event, d) {
+        // Revert to the original color on mouseout
+        const countryName = d.properties.name;
+        const titleCount = countryTitleCount[countryName] || 0;
+        d3.select(this).attr(
+          "fill",
+          titleCount > 0 ? colorScale(titleCount) : "white"
+        );
+
+        // Remove the added text element on mouseout
+        mapSvg.select("#hoverText").remove();
+      });
+
+    // Add text elements for significant countries
+    mapSvg
+      .selectAll("text")
+      .data(world.features)
+      .enter()
+      .filter((d) => {
+        const countryName = d.properties.name;
+        const titleCount = countryTitleCount[countryName] || 0;
+
+        // Show text only for countries with a significant number of titles
+        return titleCount > titleThreshold;
+      });
+    // Add a gradient legend
+    const legendGradient = mapSvg
+      .append("defs")
+      .append("linearGradient")
+      .attr("id", "legendGradient")
+      .attr("x1", "0%")
+      .attr("y1", "100%")
+      .attr("x2", "0%")
+      .attr("y2", "0%");
+
+    // Define gradient colors
+    const gradientColors = ["#FFC0CB", "#FF0000"];
+
+    // Add color stops to the gradient
+    legendGradient
+      .selectAll("stop")
+      .data(gradientColors)
+      .enter()
+      .append("stop")
+      .attr("offset", (d, i) => i * 100 + "%")
+      .attr("stop-color", (d) => d);
+
+    // Create a rectangle to show the gradient
+    mapSvg
+      .append("rect")
+      .attr("x", 100)
+      .attr("y", 450)
+      .attr("width", 20)
+      .attr("height", 200)
+      .style("fill", "url(#legendGradient)");
+
+    // Add legend text
+    mapSvg
+      .append("text")
+      .attr("x", 125) // Adjust x position as needed
+      .attr("y", 450) // Adjust y position as needed
+      .attr("fill", "#FFFFFF")
+      .attr("font-size", "16px")
+      .text("3690");
+
+    mapSvg
+      .append("text")
+      .attr("x", 125) // Adjust x position as needed
+      .attr("y", 650) // Adjust y position as needed
+      .attr("fill", "#FFFFFF")
+      .attr("font-size", "16px")
+      .text("1");
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+
+///
+////
+/////
+//////
+/////// first graph
+//////  
+/////
+////
+///
   const counts = d3.rollup(
     filteredData,
     (v) => v.length,

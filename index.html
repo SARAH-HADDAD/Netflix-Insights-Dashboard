@@ -40,17 +40,6 @@
             <li><a href="#">ipsum dolor sit</a></li>
           </ul>
         </li>
-
-        <li class="">
-          <i class="uil-setting"></i><a href="#"> Settings</a>
-          <ul class="sidebar-dropdown list-unstyled">
-            <li><a href="#">Lorem ipsum</a></li>
-            <li><a href="#">ipsum dolor</a></li>
-            <li><a href="#">dolor ipsum</a></li>
-            <li><a href="#">amet consectetur</a></li>
-            <li><a href="#">ipsum dolor sit</a></li>
-          </ul>
-        </li>
         <li class="has-dropdown">
           <i class="uil-chart-pie-alt"></i><a href="#"> Components</a>
           <ul class="sidebar-dropdown list-unstyled">
@@ -217,7 +206,7 @@
               </div>
             </div>
           </div>
-          <section class="charts mt-4" id="mapsSection" style="display: none;">
+          <section class="charts mt-4" id="mapsSection">
           <div class="content rounded-3 p-3 charts mt-4">
                 <h2 class="text-center red-text mb-3" id="graph1Title">Countries</h2>
                 <div class="map-container">
@@ -259,6 +248,7 @@
     // Toggle the visibility of the charts section related to the map
     const mapsSection = document.getElementById('mapsSection');
     mapsSection.style.display = (mapsSection.style.display === 'none') ? 'block' : 'none';
+    document.getElementById('mapsSection').scrollIntoView({ behavior: 'smooth' });
   });
 </script>
 
