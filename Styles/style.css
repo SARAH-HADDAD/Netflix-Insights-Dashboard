@@ -93,7 +93,7 @@ body {
 }
 
 .sidebar ul > li > i {
-  font-size: 18px;
+  font-size: 25px;
   margin-right: 0.7rem;
   color: var(--dk-gray-500);
 }
@@ -101,7 +101,7 @@ body {
 .sidebar ul > li.has-dropdown > a:after {
   content: "\eb3a";
   font-family: unicons-line;
-  font-size: 1rem;
+  font-size: 1.5rem;
   line-height: 1.8;
   float: right;
   color: var(--dk-gray-500);

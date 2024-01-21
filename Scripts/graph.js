@@ -51,22 +51,15 @@ netflixData((data) => {
     d.listed_in.forEach((g) => uniqueGenres.add(g));
   });
 
-
-
-
-
-
-
-///
-////
-/////
-//////
-/////// 3eme graph
-//////  
-/////
-////
-///
-
+  ///
+  ////
+  /////
+  //////
+  /////// 3eme graph
+  //////
+  /////
+  ////
+  ///
 
   const movieGenreCount = {};
   const TvShowGenreCount = {};
@@ -75,24 +68,23 @@ netflixData((data) => {
     const releaseYear = d.release_year;
     const genres = d.listed_in;
     const type = d.type;
-  
+
     genres.forEach((genre) => {
       if (releaseYear >= 2010 && releaseYear <= 2020) {
         if (type === "Movie") {
-          // Initialize the count for the genre and release year if not present
           movieGenreCount[genre] = movieGenreCount[genre] || {};
           movieGenreCount[genre][releaseYear] =
-            (movieGenreCount[genre][releaseYear] || 0) + 1;
+          movieGenreCount[genre][releaseYear] || 0;
+          movieGenreCount[genre][releaseYear] += 1;
         } else if (type === "TV Show") {
-          // Initialize the count for the genre and release year if not present
           TvShowGenreCount[genre] = TvShowGenreCount[genre] || {};
           TvShowGenreCount[genre][releaseYear] =
-            (TvShowGenreCount[genre][releaseYear] || 0) + 1;
+          TvShowGenreCount[genre][releaseYear] || 0;
+          TvShowGenreCount[genre][releaseYear] += 1;
         }
       }
     });
   });
-
 
   const genres = Object.keys(movieGenreCount);
   const genres2 = Object.keys(TvShowGenreCount);
@@ -100,10 +92,6 @@ netflixData((data) => {
   const releaseYears = [...new Set(data.map((d) => d.release_year))]
     .filter((year) => year >= 2010 && year <= 2020)
     .sort((a, b) => a - b);
-  
-  const releaseYears2 = [...new Set(data.map((d) => d.release_year))]
-  .filter((year) => year >= 2010 && year <= 2020)
-  .sort((a, b) => a - b);  
 
   const totalGenres = uniqueGenres.size;
   d3.select("#TotalGenresNumber").text(totalGenres);
@@ -116,21 +104,15 @@ netflixData((data) => {
   const width = 550 - margin.left - margin.right;
   const height = 400 - margin.top - margin.bottom;
 
-  let currentData = "movieGenreCount";
 
-  const svg = d3
-    .select("#release_year")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  const svg2 = d3
+
+
+    const svg2 = d3
     .select("#linePlot")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", width +(margin.left) + margin.right)
+    .attr("height", height + margin.top +(margin.bottom))
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
   const x = d3.scalePoint().domain(releaseYears).range([0, width]);
@@ -142,6 +124,14 @@ netflixData((data) => {
     .selectAll("text")
     .attr("transform", "rotate(-45)")
     .style("text-anchor", "end");
+// X Axis Label
+svg2
+  .append("text")
+  .attr("transform", `translate(${width / 2}, ${height + margin.top + 10})`)
+  .style("text-anchor", "middle")
+  .style("font-size", "14px")
+  .style("fill", "white")
+  .text("Years");
 
   const y = d3
     .scaleLinear()
@@ -154,237 +144,232 @@ netflixData((data) => {
     .range([height, 0]);
 
   svg2.append("g").call(d3.axisLeft(y));
-
+  svg2
+  .append("text")
+  .attr("class", "leText")
+  .attr("transform", "rotate(-90)")
+  .attr("y", 0 - margin.left)
+  .attr("x", 0 - height / 2)
+  .attr("dy", "1em")
+  .style("text-anchor", "middle")
+  .style("font-size", "14px")
+  .style("fill", "white")
+  .text("Movies Titles");
   const color = d3.scaleOrdinal().range(d3.schemeCategory10);
 
   svg2
-  .selectAll(".line")
-  .data(genres)
-  .enter()
-  .append("path")
-  .attr("class", "line") // Add a class to the lines for easier selection
-  .attr("fill", "none")
-  .attr("stroke", (genre) => color(genre))
-  .attr("stroke-width", 1.5)
-  .attr("d", (genre) =>
-    d3
-      .line()
-      .x((year) => x(year))
-      .y((year) => y(movieGenreCount[genre][year] || 0))(releaseYears)
-  )
-  .on("mouseover", function (event, genre) {
-    svg2
-      .append("text")
-      .attr("class", "label")
-      .attr("x", event.pageX - svg2.node().getBoundingClientRect().left + 5)
-      .attr("y", event.pageY - svg2.node().getBoundingClientRect().top)
-      .text(genre)
-      .attr("fill", color(genre))
-      .attr("text-anchor", "start")
-      .attr("font-size", "12px");
-  })
-  .on("mouseout", function () {
-    svg2.selectAll(".label").remove();
-  });
-
-// Toggle between movieGenreCount and TvShowGenreCount on svg2 click
-svg2.on("click", function () {
-  console.log("clicked");
-  // Toggle the data state
-
-  if (currentData != "movieGenreCount") {
-    console.log("movie");
-    
-    svg2
-    .selectAll(".line")
-    .data(genres2)
-    .transition()
-    .duration(100)
-    .attr("stroke", (genre) => color(genre))
-    .attr("d", (genre) =>
-      d3
-        .line()
-        .x((year) => x(year))
-        .y((year) => y(currentData[genre][year] || 0))(releaseYears2)
-    );
-    currentData = "movieGenreCount";
-  }
-  else{
-    // d3.select("#linePlotTitle").text("Movie Releases by Genre");
-    svg2
     .selectAll(".line")
     .data(genres)
-    .transition()
-    .duration(100)
+    .enter()
+    .append("path")
+    .attr("class", "line") // Add a class to the lines for easier selection
+    .attr("fill", "none")
     .attr("stroke", (genre) => color(genre))
+    .attr("stroke-width", 1.5)
     .attr("d", (genre) =>
       d3
         .line()
         .x((year) => x(year))
-        .y((year) => y(currentData[genre][year] || 0))(releaseYears)
-    );
-    currentData = "TvShowGenreCount";
-  }
+        .y((year) => y(movieGenreCount[genre][year] || 0))(releaseYears)
+    )
+    .on("mouseover", function (event, genre) {
+      svg2
+        .append("text")
+        .attr("class", "label")
+        .attr("x", event.pageX - svg2.node().getBoundingClientRect().left + 5)
+        .attr("y", event.pageY - svg2.node().getBoundingClientRect().top)
+        .text(genre)
+        .attr("fill", color(genre))
+        .attr("text-anchor", "start")
+        .attr("font-size", "12px");
+    })
+    .on("mouseout", function () {
+      svg2.selectAll(".label").remove();
+    });
 
-});
-  
+  svg2.on("click", function () {
+    console.log("clicked");
 
-
-///
-////
-/////
-//////
-/////// the map
-//////  
-/////
-////
-///
-
-// Removing "null" from unique countries (if necessary)
-uniqueCountries.delete("null");
-
-// Calculating the total number of countries and genres
-const totalCountries = uniqueCountries.size;
-d3.select("#TotalCountriesNumber").text(totalCountries);
-
-d3.json("Data/world.json")
-  .then((world) => {
-    // Set a threshold for the significant number of titles
-    const titleThreshold = 100;
-    var projection = d3.geoMercator().fitSize([1100, 700], world);
-    var path = d3.geoPath().projection(projection);
-    // Select the element with ID "map"
-    const mapSvg = d3
-      .select("#map")
-      .append("svg")
-      .attr("width", "100%")
-      .attr("height", "700px");
-
-    // Add path elements for each country
-    mapSvg
-      .selectAll("path")
-      .data(world.features)
-      .enter()
-      .append("path")
-      .attr("fill", (d) => {
-        const countryName = d.properties.name;
-        const titleCount = countryTitleCount[countryName] || 0;
-
-        // Color based on title count
-        return titleCount > 0 ? colorScale(titleCount) : "white";
-      })
-      .attr("d", path)
-      // Change the 'mouseover' event handler for the map path
-      .on("mouseover", function (event, d) {
-        // Change color on hover
-        d3.select(this).attr("fill", "#990000");
-
-        // Add a text element for country name and title count on hover
-        const countryName = d.properties.name;
-        const titleCount = countryTitleCount[countryName] || 0;
-
-        // Get the centroid of the country path
-        const centroid = path.centroid(d);
-
-        // Add a text element at the centroid
-        mapSvg
-          .append("text")
-          .attr("id", "hoverText")
-          .attr("x", centroid[0])
-          .attr("y", centroid[1])
-          .attr("text-anchor", "middle")
-          .attr("dy", "0.5em")
-          .attr("fill", "#00A0B0")
-          .attr("font-size", "18px") // Adjust font size as needed
-          .text(`${countryName}: ${titleCount} titles`);
-      })
-
-      .on("mouseout", function (event, d) {
-        // Revert to the original color on mouseout
-        const countryName = d.properties.name;
-        const titleCount = countryTitleCount[countryName] || 0;
-        d3.select(this).attr(
-          "fill",
-          titleCount > 0 ? colorScale(titleCount) : "white"
-        );
-
-        // Remove the added text element on mouseout
-        mapSvg.select("#hoverText").remove();
-      });
-
-    // Add text elements for significant countries
-    mapSvg
-      .selectAll("text")
-      .data(world.features)
-      .enter()
-      .filter((d) => {
-        const countryName = d.properties.name;
-        const titleCount = countryTitleCount[countryName] || 0;
-
-        // Show text only for countries with a significant number of titles
-        return titleCount > titleThreshold;
-      });
-    // Add a gradient legend
-    const legendGradient = mapSvg
-      .append("defs")
-      .append("linearGradient")
-      .attr("id", "legendGradient")
-      .attr("x1", "0%")
-      .attr("y1", "100%")
-      .attr("x2", "0%")
-      .attr("y2", "0%");
-
-    // Define gradient colors
-    const gradientColors = ["#FFC0CB", "#FF0000"];
-
-    // Add color stops to the gradient
-    legendGradient
-      .selectAll("stop")
-      .data(gradientColors)
-      .enter()
-      .append("stop")
-      .attr("offset", (d, i) => i * 100 + "%")
-      .attr("stop-color", (d) => d);
-
-    // Create a rectangle to show the gradient
-    mapSvg
-      .append("rect")
-      .attr("x", 100)
-      .attr("y", 450)
-      .attr("width", 20)
-      .attr("height", 200)
-      .style("fill", "url(#legendGradient)");
-
-    // Add legend text
-    mapSvg
-      .append("text")
-      .attr("x", 125) // Adjust x position as needed
-      .attr("y", 450) // Adjust y position as needed
-      .attr("fill", "#FFFFFF")
-      .attr("font-size", "16px")
-      .text("3690");
-
-    mapSvg
-      .append("text")
-      .attr("x", 125) // Adjust x position as needed
-      .attr("y", 650) // Adjust y position as needed
-      .attr("fill", "#FFFFFF")
-      .attr("font-size", "16px")
-      .text("1");
-  })
-  .catch((error) => {
-    console.error(error);
+    console.log(genres2);
+    svg2
+      .selectAll(".line")
+      .data(genres2)
+      .transition()
+      .duration(1000)
+      .attr("d", (genre) =>
+        d3
+          .line()
+          .x((year) => x(year))
+          .y((year) => y(TvShowGenreCount[genre][year] || 0))(releaseYears)
+      );
+      svg2
+      .selectAll(".leText")
+      .text("Tv Shows Titles");
   });
 
-///
-////
-/////
-//////
-/////// first graph
-//////  
-/////
-////
-///
+  ///
+  ////
+  /////
+  //////
+  /////// the map
+  //////
+  /////
+  ////
+  ///
+
+  const svg = d3
+  .select("#release_year")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // Removing "null" from unique countries (if necessary)
+  uniqueCountries.delete("null");
+
+  // Calculating the total number of countries and genres
+  const totalCountries = uniqueCountries.size;
+  d3.select("#TotalCountriesNumber").text(totalCountries);
+
+  d3.json("Data/world.json")
+    .then((world) => {
+      // Set a threshold for the significant number of titles
+      const titleThreshold = 100;
+      var projection = d3.geoMercator().fitSize([1100, 700], world);
+      var path = d3.geoPath().projection(projection);
+      // Select the element with ID "map"
+      const mapSvg = d3
+        .select("#map")
+        .append("svg")
+        .attr("width", "100%")
+        .attr("height", "700px");
+
+      // Add path elements for each country
+      mapSvg
+        .selectAll("path")
+        .data(world.features)
+        .enter()
+        .append("path")
+        .attr("fill", (d) => {
+          const countryName = d.properties.name;
+          const titleCount = countryTitleCount[countryName] || 0;
+
+          // Color based on title count
+          return titleCount > 0 ? colorScale(titleCount) : "white";
+        })
+        .attr("d", path)
+        // Change the 'mouseover' event handler for the map path
+        .on("mouseover", function (event, d) {
+          // Change color on hover
+          d3.select(this).attr("fill", "#990000");
+
+          // Add a text element for country name and title count on hover
+          const countryName = d.properties.name;
+          const titleCount = countryTitleCount[countryName] || 0;
+
+          // Get the centroid of the country path
+          const centroid = path.centroid(d);
+
+          // Add a text element at the centroid
+          mapSvg
+            .append("text")
+            .attr("id", "hoverText")
+            .attr("x", centroid[0])
+            .attr("y", centroid[1])
+            .attr("text-anchor", "middle")
+            .attr("dy", "0.5em")
+            .attr("fill", "#00A0B0")
+            .attr("font-size", "18px") // Adjust font size as needed
+            .text(`${countryName}: ${titleCount} titles`);
+        })
+
+        .on("mouseout", function (event, d) {
+          // Revert to the original color on mouseout
+          const countryName = d.properties.name;
+          const titleCount = countryTitleCount[countryName] || 0;
+          d3.select(this).attr(
+            "fill",
+            titleCount > 0 ? colorScale(titleCount) : "white"
+          );
+
+          // Remove the added text element on mouseout
+          mapSvg.select("#hoverText").remove();
+        });
+
+      // Add text elements for significant countries
+      mapSvg
+        .selectAll("text")
+        .data(world.features)
+        .enter()
+        .filter((d) => {
+          const countryName = d.properties.name;
+          const titleCount = countryTitleCount[countryName] || 0;
+
+          // Show text only for countries with a significant number of titles
+          return titleCount > titleThreshold;
+        });
+      // Add a gradient legend
+      const legendGradient = mapSvg
+        .append("defs")
+        .append("linearGradient")
+        .attr("id", "legendGradient")
+        .attr("x1", "0%")
+        .attr("y1", "100%")
+        .attr("x2", "0%")
+        .attr("y2", "0%");
+
+      // Define gradient colors
+      const gradientColors = ["#FFC0CB", "#FF0000"];
+
+      // Add color stops to the gradient
+      legendGradient
+        .selectAll("stop")
+        .data(gradientColors)
+        .enter()
+        .append("stop")
+        .attr("offset", (d, i) => i * 100 + "%")
+        .attr("stop-color", (d) => d);
+
+      // Create a rectangle to show the gradient
+      mapSvg
+        .append("rect")
+        .attr("x", 100)
+        .attr("y", 450)
+        .attr("width", 20)
+        .attr("height", 200)
+        .style("fill", "url(#legendGradient)");
+
+      // Add legend text
+      mapSvg
+        .append("text")
+        .attr("x", 125) // Adjust x position as needed
+        .attr("y", 450) // Adjust y position as needed
+        .attr("fill", "#FFFFFF")
+        .attr("font-size", "16px")
+        .text("3690");
+
+      mapSvg
+        .append("text")
+        .attr("x", 125) // Adjust x position as needed
+        .attr("y", 650) // Adjust y position as needed
+        .attr("fill", "#FFFFFF")
+        .attr("font-size", "16px")
+        .text("1");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  ///
+  ////
+  /////
+  //////
+  /////// first graph
+  //////
+  /////
+  ////
+  ///
   const counts = d3.rollup(
     filteredData,
     (v) => v.length,
