@@ -1,0 +1,263 @@
+{
+  "children": [
+    {
+      "name": "Movie",
+      "children": [
+        {
+          "name": "International Movies",
+          "group": "International Movies",
+          "value": 2162,
+          "colname": "level3"
+        },
+        {
+          "name": "Dramas",
+          "group": "Dramas",
+          "value": 1850,
+          "colname": "level3"
+        },
+        {
+          "name": "Comedies",
+          "group": "Comedies",
+          "value": 1186,
+          "colname": "level3"
+        },
+        {
+          "name": "Documentaries",
+          "group": "Documentaries",
+          "value": 764,
+          "colname": "level3"
+        },
+        {
+          "name": "International Movies",
+          "group": "International Movies",
+          "value": 650,
+          "colname": "level3"
+        },
+        {
+          "name": "Action & Adventure",
+          "group": "Action & Adventure",
+          "value": 534,
+          "colname": "level3"
+        },
+        {
+          "name": "Children & Family Movies",
+          "group": "Children & Family Movies",
+          "value": 485,
+          "colname": "level3"
+        },
+        {
+          "name": "Thrillers",
+          "group": "Thrillers",
+          "value": 456,
+          "colname": "level3"
+        },
+        {
+          "name": "Romantic Movies",
+          "group": "Romantic Movies",
+          "value": 450,
+          "colname": "level3"
+        },
+        {
+          "name": "Stand-Up Comedy",
+          "group": "Stand-Up Comedy",
+          "value": 302,
+          "colname": "level3"
+        },
+        {
+          "name": "Music & Musicals",
+          "group": "Music & Musicals",
+          "value": 276,
+          "colname": "level3"
+        },
+        {
+          "name": "Horror Movies",
+          "group": "Horror Movies",
+          "value": 273,
+          "colname": "level3"
+        },
+        {
+          "name": "Sports Movies",
+          "group": "Sports Movies",
+          "value": 173,
+          "colname": "level3"
+        },
+        {
+          "name": "Sci-Fi & Fantasy",
+          "group": "Sci-Fi & Fantasy",
+          "value": 164,
+          "colname": "level3"
+        },
+        {
+          "name": "Faith & Spirituality",
+          "group": "Faith & Spirituality",
+          "value": 56,
+          "colname": "level3"
+        },
+        {
+          "name": "Movies",
+          "group": "Movies",
+          "value": 48,
+          "colname": "level3"
+        },
+        {
+          "name": "Anime Features",
+          "group": "Anime Features",
+          "value": 43,
+          "colname": "level3"
+        },
+        {
+          "name": "Cult Movies",
+          "group": "Cult Movies",
+          "value": 9,
+          "colname": "level3"
+        },
+        {
+          "name": "Classic Movies",
+          "group": "Classic Movies",
+          "value": 1,
+          "colname": "level3"
+        }
+      ],
+      "colname": "level2"
+    },
+    {
+      "name": "TV Shows",
+      "children": [
+        {
+          "name": "International TV Shows",
+          "group": "International TV Shows",
+          "value": 1134,
+          "colname": "level3"
+        },
+        {
+          "name": "TV Dramas",
+          "group": "TV Dramas",
+          "value": 648,
+          "colname": "level3"
+        },
+        {
+          "name": "TV Comedies",
+          "group": "TV Comedies",
+          "value": 465,
+          "colname": "level3"
+        },
+        {
+          "name": "Crime TV Shows",
+          "group": "Crime TV Shows",
+          "value": 412,
+          "colname": "level3"
+        },
+        {
+          "name": "Kids' TV",
+          "group": "Kids' TV",
+          "value": 362,
+          "colname": "level3"
+        },
+        {
+          "name": "Docuseries",
+          "group": "Docuseries",
+          "value": 316,
+          "colname": "level3"
+        },
+        {
+          "name": "Romantic TV Shows",
+          "group": "Romantic TV Shows",
+          "value": 311,
+          "colname": "level3"
+        },
+        {
+          "name": "British TV Shows",
+          "group": "British TV Shows",
+          "value": 217,
+          "colname": "level3"
+        },
+        {
+          "name": "Reality TV",
+          "group": "Reality TV",
+          "value": 205,
+          "colname": "level3"
+        },
+        {
+          "name": "Korean TV Shows",
+          "group": "Korean TV Shows",
+          "value": 144,
+          "colname": "level3"
+        },
+        {
+          "name": "Spanish-Language TV Shows",
+          "group": "Spanish-Language TV Shows",
+          "value": 133,
+          "colname": "level3"
+        },
+        {
+          "name": "TV Action & Adventure",
+          "group": "TV Action & Adventure",
+          "value": 125,
+          "colname": "level3"
+        },
+        {
+          "name": "Anime Series",
+          "group": "Anime Series",
+          "value": 125,
+          "colname": "level3"
+        },
+        {
+          "name": "TV Mysteries",
+          "group": "TV Mysteries",
+          "value": 82,
+          "colname": "level3"
+        },
+        {
+          "name": "Science & Nature TV",
+          "group": "Science & Nature TV",
+          "value": 75,
+          "colname": "level3"
+        },
+        {
+          "name": "TV Horror",
+          "group": "TV Horror",
+          "value": 64,
+          "colname": "level3"
+        },
+        {
+          "name": "TV Sci-Fi & Fantasy",
+          "group": "TV Sci-Fi & Fantasy",
+          "value": 61,
+          "colname": "level3"
+        },
+        {
+          "name": "Teen TV Shows",
+          "group": "Teen TV Shows",
+          "value": 54,
+          "colname": "level3"
+        },
+        {
+          "name": "Stand-Up Comedy & Talk Shows",
+          "group": "Stand-Up Comedy & Talk Shows",
+          "value": 47,
+          "colname": "level3"
+        },
+        {
+          "name": "TV Thrillers",
+          "group": "TV Thrillers",
+          "value": 46,
+          "colname": "level3"
+        },
+        {
+          "name": "Classic & Cult TV",
+          "group": "Classic & Cult TV",
+          "value": 14,
+          "colname": "level3"
+        },
+        {
+          "name": "TV Shows",
+          "group": "TV Shows",
+          "value": 8,
+          "colname": "level3"
+        }
+      ],
+      "colname": "level2"
+    }
+  ],
+  "name": "CEO"
+}

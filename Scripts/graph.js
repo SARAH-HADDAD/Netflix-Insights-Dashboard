@@ -89,6 +89,7 @@ netflixData((data) => {
   const genres = Object.keys(movieGenreCount);
   const genres2 = Object.keys(TvShowGenreCount);
 
+  
   const releaseYears = [...new Set(data.map((d) => d.release_year))]
     .filter((year) => year >= 2010 && year <= 2020)
     .sort((a, b) => a - b);

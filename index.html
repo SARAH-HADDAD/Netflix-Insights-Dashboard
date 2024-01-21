@@ -225,6 +225,13 @@
               </div>
             </div>
           </section>
+          <section class="charts mt-4" id="treemapSection">
+            <div class="content rounded-3 p-3 charts mt-4">
+                  <h2 class="text-center red-text mb-3" id="graph1Title">Genres</h2>
+                  <div id="treemap">
+                  </div>
+            </div>
+            </section>
         </section>
 
  
@@ -241,6 +248,7 @@
     <script src="Scripts/d3.js"></script>
     <script src="Scripts/graph.js"></script>
     <script src="Scripts/graph2.js"></script>
+    <script src="Scripts/treemap.js"></script>
 <script>
   document.getElementById('mapsDropdown').addEventListener('click', function () {
     // Toggle the visibility of the charts section related to the map
