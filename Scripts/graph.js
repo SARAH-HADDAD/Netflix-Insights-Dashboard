@@ -31,6 +31,7 @@ netflixData((data) => {
   const uniqueCountries = new Set();
   const uniqueGenres = new Set();
   const countryTitleCount = {}; // Object to store title count for each country
+  
 
   data.forEach((d) => {
     d.country.forEach((c) => {
@@ -89,7 +90,7 @@ netflixData((data) => {
   const genres = Object.keys(movieGenreCount);
   const genres2 = Object.keys(TvShowGenreCount);
 
-  
+
   const releaseYears = [...new Set(data.map((d) => d.release_year))]
     .filter((year) => year >= 2010 && year <= 2020)
     .sort((a, b) => a - b);
@@ -191,7 +192,6 @@ svg2
   svg2.on("click", function () {
     console.log("clicked");
 
-    console.log(genres2);
     svg2
       .selectAll(".line")
       .data(genres2)
@@ -429,6 +429,20 @@ svg2
   let currentState = "All";
   const states = ["All", "Movie", "TV Show"];
   const movieData = filteredData.filter((entry) => entry.type === "Movie");
+  const movieDurations = movieData.map((entry) => entry.duration);
+
+  // Assuming duration is in the format "X min", extracting only the numeric part
+  const durationValues = movieDurations.map((duration) => parseInt(duration.split(" ")[0])).filter((duration) => !isNaN(duration));
+
+  const durationCount = {};
+
+  durationValues.forEach((duration) => {
+    // Increment the count for the current duration
+    durationCount[duration] = (durationCount[duration] || 0) + 1;
+  });
+
+
+
   const tvData = filteredData.filter((entry) => entry.type === "TV Show");
 
   const totalTVShows = tvData.length;
@@ -483,4 +497,215 @@ svg2
 
     d3.select("#graph1Title").text(`${currentState} Releases by Year`);
   });
+
+  //
+  ///
+  ////
+  /////
+  //////
+  /////// 5eme graph
+
+  const svg5 = d3.select("#my_area_chart")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  const x5 = d3.scaleLinear()
+  .domain([0, d3.max(durationValues)])
+  .range([0, width]);
+
+const y5 = d3.scaleLinear()
+  .domain([0, d3.max(Object.values(durationCount))])
+  .range([height, 0]);
+
+
+  svg5.append("path")
+  .datum(Object.entries(durationCount))
+  .attr("fill", "#FFC0CB")
+  .attr("stroke", "#FF0000")
+  .attr("stroke-width", 1.5)
+  .attr("d", d3.area()
+    .x(d => x5(+d[0]))
+    .y0(height)
+    .y1(d => y5(+d[1]))
+  );
+
+  svg5.append("g")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x5));
+
+svg5.append("g")
+  .call(d3.axisLeft(y5));
+  // Add X axis label
+svg5
+.append("text")
+.attr("transform", `translate(${width / 2}, ${height + margin.top + 15})`)
+.style("text-anchor", "middle")
+.style("font-size", "14px")
+.style("fill", "white")
+.text("Duration (minutes)");
+
+// Add Y axis label
+svg5
+.append("text")
+.attr("transform", "rotate(-90)")
+.attr("y", 0 - margin.left)
+.attr("x", 0 - height / 2)
+.attr("dy", "1em")
+.style("fill", "white")
+.style("text-anchor", "middle")
+.style("font-size", "14px")
+.text("Number of Titles");
+
+
+
+////
+//////////////// 6
+/////
+
+
+const tvShowSeasons = tvData.map((entry) => entry.duration);
+
+// Assuming season is in the format "X Season", extracting only the numeric part
+const seasonValues = tvShowSeasons.map((season) => parseInt(season.split(" ")[0])).filter((season) => !isNaN(season));
+
+const seasonCount = {};
+
+seasonValues.forEach((season) => {
+  // Increment the count for the current season
+  seasonCount[season] = (seasonCount[season] || 0) + 1;
+});
+
+
+
+const svg6 = d3.select("#my_area_chart2")
+.append("svg")
+.attr("width", width + margin.left + margin.right)
+.attr("height", height + margin.top + margin.bottom)
+.append("g")
+.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+const x6 = d3.scaleLinear()
+  .domain([0, d3.max(Object.keys(seasonCount).map(Number))])
+  .range([0, width]);
+
+
+const y6 = d3.scaleLinear()
+.domain([0, d3.max(Object.values(seasonCount))])
+.range([height, 0]);
+
+
+svg6.append("path")
+.datum(Object.entries(seasonCount))
+.attr("fill", "#FFC0CB")
+.attr("stroke", "#FF0000")
+.attr("stroke-width", 1.5)
+.attr("d", d3.area()
+  .x(d => x6(+d[0]))
+  .y0(height)
+  .y1(d => y6(+d[1]))
+);
+
+svg6.append("g")
+.attr("transform", "translate(0," + height + ")")
+.call(d3.axisBottom(x6));
+
+svg6.append("g")
+.call(d3.axisLeft(y6));
+// Add X axis label
+// Add X axis label
+svg6.append("text")
+  .attr("transform", `translate(${width / 2}, ${height + margin.top + 15})`)
+  .style("text-anchor", "middle")
+  .style("font-size", "14px")
+  .style("fill", "white")
+  .text("Seasons");
+
+// Add Y axis label
+svg6.append("text")
+  .attr("transform", "rotate(-90)")
+  .attr("y", 0 - margin.left)
+  .attr("x", 0 - height / 2)
+  .attr("dy", "1em")
+  .style("fill", "white")
+  .style("text-anchor", "middle")
+  .style("font-size", "14px")
+  .text("Number of Titles");
+
+  
+const directorsData = {};
+data.forEach((d) => {
+  const directors = d.director ? d.director.split(",") : [];
+  directors.forEach((director) => {
+    const trimmedDirector = director.trim();
+    directorsData[trimmedDirector] = (directorsData[trimmedDirector] || 0) + 1;
+  });
+});
+
+const topDirectors = Object.entries(directorsData)
+  .sort((a, b) => b[1] - a[1]) // Sort in descending order based on title count
+  .slice(0, 10); // Take the top 10 directors
+
+console.log("Top 10 Directors:");
+topDirectors.forEach(([director, count], index) => {
+  console.log(`${index + 1}. ${director}: ${count} titles`);
+});
+
+// Create a bar chart
+const marginChart = { top: 20, right: 20, bottom: 40, left: 120 };
+const widthChart = 500 - marginChart.left - marginChart.right;
+const heightChart = 400 - marginChart.top - marginChart.bottom;
+
+const xChart = d3.scaleLinear().domain([0, d3.max(topDirectors, d => d[1])]).range([0, widthChart]);
+const yChart = d3.scaleBand().domain(topDirectors.map(d => d[0])).range([heightChart, 0]).padding(0.1);
+
+const svgChart = d3
+  .select("#topDirectorsChart")
+  .append("svg")
+  .attr("width", widthChart + marginChart.left + marginChart.right)
+  .attr("height", heightChart + marginChart.top + marginChart.bottom)
+  .append("g")
+  .attr("transform", `translate(${marginChart.left},${marginChart.top})`);
+
+svgChart
+  .selectAll("rect")
+  .data(topDirectors)
+  .enter()
+  .append("rect")
+  .attr("x", 0)
+  .attr("y", d => yChart(d[0]))
+  .attr("width", d => xChart(d[1]))
+  .attr("height", yChart.bandwidth())
+  .attr("fill", "#FF0000");
+
+svgChart.append("g").call(d3.axisLeft(yChart));
+
+svgChart
+  .append("g")
+  .attr("transform", `translate(0, ${heightChart})`)
+  .call(d3.axisBottom(xChart).ticks(5));
+
+svgChart
+  .append("text")
+  .attr("x", widthChart / 2)
+  .attr("y", heightChart + marginChart.top + 20)
+  .attr("text-anchor", "middle")
+  .attr("font-size", "12px")
+  .attr("fill", "white")
+  .text("Number of Titles");
+
+svgChart
+  .append("text")
+  .attr("transform", "rotate(-90)")
+  .attr("y", 0 - marginChart.left)
+  .attr("x", 0 - heightChart / 2)
+  .attr("dy", "1em")
+  .style("text-anchor", "middle")
+  .style("font-size", "12px")
+  .style("fill", "white")
+  .text("Director");
+
+  
 });
