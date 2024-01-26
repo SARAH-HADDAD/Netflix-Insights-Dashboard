@@ -31,7 +31,6 @@ netflixData((data) => {
   const uniqueCountries = new Set();
   const uniqueGenres = new Set();
   const countryTitleCount = {}; // Object to store title count for each country
-  
 
   data.forEach((d) => {
     d.country.forEach((c) => {
@@ -75,12 +74,12 @@ netflixData((data) => {
         if (type === "Movie") {
           movieGenreCount[genre] = movieGenreCount[genre] || {};
           movieGenreCount[genre][releaseYear] =
-          movieGenreCount[genre][releaseYear] || 0;
+            movieGenreCount[genre][releaseYear] || 0;
           movieGenreCount[genre][releaseYear] += 1;
         } else if (type === "TV Show") {
           TvShowGenreCount[genre] = TvShowGenreCount[genre] || {};
           TvShowGenreCount[genre][releaseYear] =
-          TvShowGenreCount[genre][releaseYear] || 0;
+            TvShowGenreCount[genre][releaseYear] || 0;
           TvShowGenreCount[genre][releaseYear] += 1;
         }
       }
@@ -89,7 +88,6 @@ netflixData((data) => {
 
   const genres = Object.keys(movieGenreCount);
   const genres2 = Object.keys(TvShowGenreCount);
-
 
   const releaseYears = [...new Set(data.map((d) => d.release_year))]
     .filter((year) => year >= 2010 && year <= 2020)
@@ -106,15 +104,24 @@ netflixData((data) => {
   const width = 550 - margin.left - margin.right;
   const height = 400 - margin.top - margin.bottom;
 
+  const lineChartTooltip = d3
+    .select("#linePlot")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("color", "black")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("fill", "black")
+    .style("padding", "5px");
 
-
-
-
-    const svg2 = d3
+  const svg2 = d3
     .select("#linePlot")
     .append("svg")
-    .attr("width", width +(margin.left) + margin.right)
-    .attr("height", height + margin.top +(margin.bottom))
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
   const x = d3.scalePoint().domain(releaseYears).range([0, width]);
@@ -126,14 +133,14 @@ netflixData((data) => {
     .selectAll("text")
     .attr("transform", "rotate(-45)")
     .style("text-anchor", "end");
-// X Axis Label
-svg2
-  .append("text")
-  .attr("transform", `translate(${width / 2}, ${height + margin.top + 10})`)
-  .style("text-anchor", "middle")
-  .style("font-size", "14px")
-  .style("fill", "white")
-  .text("Years");
+  // X Axis Label
+  svg2
+    .append("text")
+    .attr("transform", `translate(${width / 2}, ${height + margin.top + 10})`)
+    .style("text-anchor", "middle")
+    .style("font-size", "14px")
+    .style("fill", "white")
+    .text("Years");
 
   const y = d3
     .scaleLinear()
@@ -147,16 +154,16 @@ svg2
 
   svg2.append("g").call(d3.axisLeft(y));
   svg2
-  .append("text")
-  .attr("class", "leText")
-  .attr("transform", "rotate(-90)")
-  .attr("y", 0 - margin.left)
-  .attr("x", 0 - height / 2)
-  .attr("dy", "1em")
-  .style("text-anchor", "middle")
-  .style("font-size", "14px")
-  .style("fill", "white")
-  .text("Movies Titles");
+    .append("text")
+    .attr("class", "leText")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left)
+    .attr("x", 0 - height / 2)
+    .attr("dy", "1em")
+    .style("text-anchor", "middle")
+    .style("font-size", "14px")
+    .style("fill", "white")
+    .text("Movies Titles");
   const color = d3.scaleOrdinal().range(d3.schemeCategory10);
 
   svg2
@@ -167,7 +174,7 @@ svg2
     .attr("class", "line") // Add a class to the lines for easier selection
     .attr("fill", "none")
     .attr("stroke", (genre) => color(genre))
-    .attr("stroke-width", 1.5)
+    .attr("stroke-width", 2)
     .attr("d", (genre) =>
       d3
         .line()
@@ -175,18 +182,21 @@ svg2
         .y((year) => y(movieGenreCount[genre][year] || 0))(releaseYears)
     )
     .on("mouseover", function (event, genre) {
-      svg2
-        .append("text")
-        .attr("class", "label")
-        .attr("x", event.pageX - svg2.node().getBoundingClientRect().left + 5)
-        .attr("y", event.pageY - svg2.node().getBoundingClientRect().top)
-        .text(genre)
-        .attr("fill", color(genre))
-        .attr("text-anchor", "start")
-        .attr("font-size", "12px");
+      lineChartTooltip
+        .style("opacity", 1)
+        .html(`Genre: ${genre}`)
+        .style("left", `${event.pageX}px`)
+        .style("fill", "black")
+        .style("top", `${event.pageY}px`);
+    })
+    .on("mousemove", function (event, genre) {
+      lineChartTooltip
+        .html(`Genre: ${genre}`)
+        .style("left", `${event.pageX}px`)
+        .style("top", `${event.pageY}px`);
     })
     .on("mouseout", function () {
-      svg2.selectAll(".label").remove();
+      lineChartTooltip.style("opacity", 0);
     });
 
   svg2.on("click", function () {
@@ -203,9 +213,7 @@ svg2
           .x((year) => x(year))
           .y((year) => y(TvShowGenreCount[genre][year] || 0))(releaseYears)
       );
-      svg2
-      .selectAll(".leText")
-      .text("Tv Shows Titles");
+    svg2.selectAll(".leText").text("Tv Shows Titles");
   });
 
   ///
@@ -217,14 +225,25 @@ svg2
   /////
   ////
   ///
+  const lineMapTooltip = d3
+    .select("#linePlot")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "5px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+    .style("color", "black");
 
   const svg = d3
-  .select("#release_year")
-  .append("svg")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .select("#release_year")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Removing "null" from unique countries (if necessary)
   uniqueCountries.delete("null");
@@ -269,22 +288,25 @@ svg2
           const countryName = d.properties.name;
           const titleCount = countryTitleCount[countryName] || 0;
 
-          // Get the centroid of the country path
-          const centroid = path.centroid(d);
-
-          // Add a text element at the centroid
-          mapSvg
-            .append("text")
-            .attr("id", "hoverText")
-            .attr("x", centroid[0])
-            .attr("y", centroid[1])
-            .attr("text-anchor", "middle")
-            .attr("dy", "0.5em")
-            .attr("fill", "#00A0B0")
-            .attr("font-size", "18px") // Adjust font size as needed
-            .text(`${countryName}: ${titleCount} titles`);
+          lineChartTooltip
+            .html(`${countryName}: ${titleCount} titles`)
+            .style("opacity", 1)
+            .style("left", `${event.pageX}px`)
+            .style("top", `${event.pageY}px`);
         })
+        .on("mousmove", function (event, d) {
+          // Change color on hover
+          d3.select(this).attr("fill", "#990000");
 
+          // Add a text element for country name and title count on hover
+          const countryName = d.properties.name;
+          const titleCount = countryTitleCount[countryName] || 0;
+
+          lineChartTooltip
+            .html(`${countryName}: ${titleCount} titles`)
+            .style("left", `${event.pageX}px`)
+            .style("top", `${event.pageY}px`);
+        })
         .on("mouseout", function (event, d) {
           // Revert to the original color on mouseout
           const countryName = d.properties.name;
@@ -293,9 +315,7 @@ svg2
             "fill",
             titleCount > 0 ? colorScale(titleCount) : "white"
           );
-
-          // Remove the added text element on mouseout
-          mapSvg.select("#hoverText").remove();
+          lineChartTooltip.style("opacity", 0);
         });
 
       // Add text elements for significant countries
@@ -432,7 +452,9 @@ svg2
   const movieDurations = movieData.map((entry) => entry.duration);
 
   // Assuming duration is in the format "X min", extracting only the numeric part
-  const durationValues = movieDurations.map((duration) => parseInt(duration.split(" ")[0])).filter((duration) => !isNaN(duration));
+  const durationValues = movieDurations
+    .map((duration) => parseInt(duration.split(" ")[0]))
+    .filter((duration) => !isNaN(duration));
 
   const durationCount = {};
 
@@ -440,8 +462,6 @@ svg2
     // Increment the count for the current duration
     durationCount[duration] = (durationCount[duration] || 0) + 1;
   });
-
-
 
   const tvData = filteredData.filter((entry) => entry.type === "TV Show");
 
@@ -505,207 +525,222 @@ svg2
   //////
   /////// 5eme graph
 
-  const svg5 = d3.select("#my_area_chart")
-  .append("svg")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  const svg5 = d3
+    .select("#my_area_chart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  const x5 = d3.scaleLinear()
-  .domain([0, d3.max(durationValues)])
-  .range([0, width]);
+  const x5 = d3
+    .scaleLinear()
+    .domain([0, d3.max(durationValues)])
+    .range([0, width]);
 
-const y5 = d3.scaleLinear()
-  .domain([0, d3.max(Object.values(durationCount))])
-  .range([height, 0]);
+  const y5 = d3
+    .scaleLinear()
+    .domain([0, d3.max(Object.values(durationCount))])
+    .range([height, 0]);
 
+  svg5
+    .append("path")
+    .datum(Object.entries(durationCount))
+    .attr("fill", "#FFC0CB")
+    .attr("stroke", "#FF0000")
+    .attr("stroke-width", 1.5)
+    .attr(
+      "d",
+      d3
+        .area()
+        .x((d) => x5(+d[0]))
+        .y0(height)
+        .y1((d) => y5(+d[1]))
+    );
 
-  svg5.append("path")
-  .datum(Object.entries(durationCount))
-  .attr("fill", "#FFC0CB")
-  .attr("stroke", "#FF0000")
-  .attr("stroke-width", 1.5)
-  .attr("d", d3.area()
-    .x(d => x5(+d[0]))
-    .y0(height)
-    .y1(d => y5(+d[1]))
-  );
+  svg5
+    .append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x5));
 
-  svg5.append("g")
-  .attr("transform", "translate(0," + height + ")")
-  .call(d3.axisBottom(x5));
-
-svg5.append("g")
-  .call(d3.axisLeft(y5));
+  svg5.append("g").call(d3.axisLeft(y5));
   // Add X axis label
-svg5
-.append("text")
-.attr("transform", `translate(${width / 2}, ${height + margin.top + 15})`)
-.style("text-anchor", "middle")
-.style("font-size", "14px")
-.style("fill", "white")
-.text("Duration (minutes)");
+  svg5
+    .append("text")
+    .attr("transform", `translate(${width / 2}, ${height + margin.top + 15})`)
+    .style("text-anchor", "middle")
+    .style("font-size", "14px")
+    .style("fill", "white")
+    .text("Duration (minutes)");
 
-// Add Y axis label
-svg5
-.append("text")
-.attr("transform", "rotate(-90)")
-.attr("y", 0 - margin.left)
-.attr("x", 0 - height / 2)
-.attr("dy", "1em")
-.style("fill", "white")
-.style("text-anchor", "middle")
-.style("font-size", "14px")
-.text("Number of Titles");
+  // Add Y axis label
+  svg5
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left)
+    .attr("x", 0 - height / 2)
+    .attr("dy", "1em")
+    .style("fill", "white")
+    .style("text-anchor", "middle")
+    .style("font-size", "14px")
+    .text("Number of Titles");
 
+  ////
+  //////////////// 6
+  /////
 
+  const tvShowSeasons = tvData.map((entry) => entry.duration);
 
-////
-//////////////// 6
-/////
+  // Assuming season is in the format "X Season", extracting only the numeric part
+  const seasonValues = tvShowSeasons
+    .map((season) => parseInt(season.split(" ")[0]))
+    .filter((season) => !isNaN(season));
 
+  const seasonCount = {};
 
-const tvShowSeasons = tvData.map((entry) => entry.duration);
-
-// Assuming season is in the format "X Season", extracting only the numeric part
-const seasonValues = tvShowSeasons.map((season) => parseInt(season.split(" ")[0])).filter((season) => !isNaN(season));
-
-const seasonCount = {};
-
-seasonValues.forEach((season) => {
-  // Increment the count for the current season
-  seasonCount[season] = (seasonCount[season] || 0) + 1;
-});
-
-
-
-const svg6 = d3.select("#my_area_chart2")
-.append("svg")
-.attr("width", width + margin.left + margin.right)
-.attr("height", height + margin.top + margin.bottom)
-.append("g")
-.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-const x6 = d3.scaleLinear()
-  .domain([0, d3.max(Object.keys(seasonCount).map(Number))])
-  .range([0, width]);
-
-
-const y6 = d3.scaleLinear()
-.domain([0, d3.max(Object.values(seasonCount))])
-.range([height, 0]);
-
-
-svg6.append("path")
-.datum(Object.entries(seasonCount))
-.attr("fill", "#FFC0CB")
-.attr("stroke", "#FF0000")
-.attr("stroke-width", 1.5)
-.attr("d", d3.area()
-  .x(d => x6(+d[0]))
-  .y0(height)
-  .y1(d => y6(+d[1]))
-);
-
-svg6.append("g")
-.attr("transform", "translate(0," + height + ")")
-.call(d3.axisBottom(x6));
-
-svg6.append("g")
-.call(d3.axisLeft(y6));
-// Add X axis label
-// Add X axis label
-svg6.append("text")
-  .attr("transform", `translate(${width / 2}, ${height + margin.top + 15})`)
-  .style("text-anchor", "middle")
-  .style("font-size", "14px")
-  .style("fill", "white")
-  .text("Seasons");
-
-// Add Y axis label
-svg6.append("text")
-  .attr("transform", "rotate(-90)")
-  .attr("y", 0 - margin.left)
-  .attr("x", 0 - height / 2)
-  .attr("dy", "1em")
-  .style("fill", "white")
-  .style("text-anchor", "middle")
-  .style("font-size", "14px")
-  .text("Number of Titles");
-
-  
-const directorsData = {};
-data.forEach((d) => {
-  const directors = d.director ? d.director.split(",") : [];
-  directors.forEach((director) => {
-    const trimmedDirector = director.trim();
-    directorsData[trimmedDirector] = (directorsData[trimmedDirector] || 0) + 1;
+  seasonValues.forEach((season) => {
+    // Increment the count for the current season
+    seasonCount[season] = (seasonCount[season] || 0) + 1;
   });
-});
 
-const topDirectors = Object.entries(directorsData)
-  .sort((a, b) => b[1] - a[1]) // Sort in descending order based on title count
-  .slice(0, 10); // Take the top 10 directors
+  const svg6 = d3
+    .select("#my_area_chart2")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-console.log("Top 10 Directors:");
-topDirectors.forEach(([director, count], index) => {
-  console.log(`${index + 1}. ${director}: ${count} titles`);
-});
+  const x6 = d3
+    .scaleLinear()
+    .domain([0, d3.max(Object.keys(seasonCount).map(Number))])
+    .range([0, width]);
 
-// Create a bar chart
-const marginChart = { top: 20, right: 20, bottom: 40, left: 120 };
-const widthChart = 500 - marginChart.left - marginChart.right;
-const heightChart = 400 - marginChart.top - marginChart.bottom;
+  const y6 = d3
+    .scaleLinear()
+    .domain([0, d3.max(Object.values(seasonCount))])
+    .range([height, 0]);
 
-const xChart = d3.scaleLinear().domain([0, d3.max(topDirectors, d => d[1])]).range([0, widthChart]);
-const yChart = d3.scaleBand().domain(topDirectors.map(d => d[0])).range([heightChart, 0]).padding(0.1);
+  svg6
+    .append("path")
+    .datum(Object.entries(seasonCount))
+    .attr("fill", "#FFC0CB")
+    .attr("stroke", "#FF0000")
+    .attr("stroke-width", 1.5)
+    .attr(
+      "d",
+      d3
+        .area()
+        .x((d) => x6(+d[0]))
+        .y0(height)
+        .y1((d) => y6(+d[1]))
+    );
 
-const svgChart = d3
-  .select("#topDirectorsChart")
-  .append("svg")
-  .attr("width", widthChart + marginChart.left + marginChart.right)
-  .attr("height", heightChart + marginChart.top + marginChart.bottom)
-  .append("g")
-  .attr("transform", `translate(${marginChart.left},${marginChart.top})`);
+  svg6
+    .append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x6));
 
-svgChart
-  .selectAll("rect")
-  .data(topDirectors)
-  .enter()
-  .append("rect")
-  .attr("x", 0)
-  .attr("y", d => yChart(d[0]))
-  .attr("width", d => xChart(d[1]))
-  .attr("height", yChart.bandwidth())
-  .attr("fill", "#FF0000");
+  svg6.append("g").call(d3.axisLeft(y6));
+  // Add X axis label
+  // Add X axis label
+  svg6
+    .append("text")
+    .attr("transform", `translate(${width / 2}, ${height + margin.top + 15})`)
+    .style("text-anchor", "middle")
+    .style("font-size", "14px")
+    .style("fill", "white")
+    .text("Seasons");
 
-svgChart.append("g").call(d3.axisLeft(yChart));
+  // Add Y axis label
+  svg6
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left)
+    .attr("x", 0 - height / 2)
+    .attr("dy", "1em")
+    .style("fill", "white")
+    .style("text-anchor", "middle")
+    .style("font-size", "14px")
+    .text("Number of Titles");
 
-svgChart
-  .append("g")
-  .attr("transform", `translate(0, ${heightChart})`)
-  .call(d3.axisBottom(xChart).ticks(5));
+  const directorsData = {};
+  data.forEach((d) => {
+    const directors = d.director ? d.director.split(",") : [];
+    directors.forEach((director) => {
+      const trimmedDirector = director.trim();
+      directorsData[trimmedDirector] =
+        (directorsData[trimmedDirector] || 0) + 1;
+    });
+  });
 
-svgChart
-  .append("text")
-  .attr("x", widthChart / 2)
-  .attr("y", heightChart + marginChart.top + 20)
-  .attr("text-anchor", "middle")
-  .attr("font-size", "12px")
-  .attr("fill", "white")
-  .text("Number of Titles");
+  const topDirectors = Object.entries(directorsData)
+    .sort((a, b) => b[1] - a[1]) // Sort in descending order based on title count
+    .slice(0, 10); // Take the top 10 directors
 
-svgChart
-  .append("text")
-  .attr("transform", "rotate(-90)")
-  .attr("y", 0 - marginChart.left)
-  .attr("x", 0 - heightChart / 2)
-  .attr("dy", "1em")
-  .style("text-anchor", "middle")
-  .style("font-size", "12px")
-  .style("fill", "white")
-  .text("Director");
+  console.log("Top 10 Directors:");
+  topDirectors.forEach(([director, count], index) => {
+    console.log(`${index + 1}. ${director}: ${count} titles`);
+  });
 
-  
+  // Create a bar chart
+  const marginChart = { top: 20, right: 20, bottom: 40, left: 120 };
+  const widthChart = 500 - marginChart.left - marginChart.right;
+  const heightChart = 400 - marginChart.top - marginChart.bottom;
+
+  const xChart = d3
+    .scaleLinear()
+    .domain([0, d3.max(topDirectors, (d) => d[1])])
+    .range([0, widthChart]);
+  const yChart = d3
+    .scaleBand()
+    .domain(topDirectors.map((d) => d[0]))
+    .range([heightChart, 0])
+    .padding(0.1);
+
+  const svgChart = d3
+    .select("#topDirectorsChart")
+    .append("svg")
+    .attr("width", widthChart + marginChart.left + marginChart.right)
+    .attr("height", heightChart + marginChart.top + marginChart.bottom)
+    .append("g")
+    .attr("transform", `translate(${marginChart.left},${marginChart.top})`);
+
+  svgChart
+    .selectAll("rect")
+    .data(topDirectors)
+    .enter()
+    .append("rect")
+    .attr("x", 0)
+    .attr("y", (d) => yChart(d[0]))
+    .attr("width", (d) => xChart(d[1]))
+    .attr("height", yChart.bandwidth())
+    .attr("fill", "#FF0000");
+
+  svgChart.append("g").call(d3.axisLeft(yChart));
+
+  svgChart
+    .append("g")
+    .attr("transform", `translate(0, ${heightChart})`)
+    .call(d3.axisBottom(xChart).ticks(5));
+
+  svgChart
+    .append("text")
+    .attr("x", widthChart / 2)
+    .attr("y", heightChart + marginChart.top + 20)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "12px")
+    .attr("fill", "white")
+    .text("Number of Titles");
+
+  svgChart
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - marginChart.left)
+    .attr("x", 0 - heightChart / 2)
+    .attr("dy", "1em")
+    .style("text-anchor", "middle")
+    .style("font-size", "12px")
+    .style("fill", "white")
+    .text("Director");
 });

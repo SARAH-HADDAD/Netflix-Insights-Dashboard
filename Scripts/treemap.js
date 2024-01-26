@@ -1,6 +1,6 @@
-const margin4 = { top: 10, right: 10, bottom: 10, left: 10 },
+const margin4 = { top: 10, right: 0, bottom: 20, left: 10 },
 width = 1100 - margin4.left - margin4.right,
-height = 700 - margin4.top - margin4.bottom;
+height = 1100 - margin4.top - margin4.bottom;
 
 // append the svg object to the body of the page
 const svg4 = d3
@@ -12,7 +12,7 @@ const svg4 = d3
 .attr("transform", `translate(${margin4.left}, ${margin4.top})`);
 
 // read json data
-d3.json("lol.json").then(function (data) {
+d3.json("Data/data.json").then(function (data) {
 // Give the data to this cluster layout:
 const root = d3.hierarchy(data).sum(function (d) {
   return d.value;
@@ -35,7 +35,7 @@ d3
 const color = d3
   .scaleOrdinal()
   .domain(["Movie", "TV Shows"])
-  .range(["#FF0000","#FFC0CB"]);
+  .range(["#CC333F","#00A0B0"]);
 
 // And a opacity scale
 const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
@@ -127,7 +127,7 @@ svg4
   .text(function (d) {
     return d.data.name;
   })
-  .attr("font-size", "22px")
+  .attr("font-size", "36px")
   .attr("fill", function (d) {
     return color(d.data.name);
   });
